@@ -441,6 +441,19 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
   <div class="sh-f"><div><button class="ghost" data-close style="margin:0">סגור</button></div></div>
 </div>
 
+<!-- SHEET: water change -->
+<div class="sheet" id="sh-wc">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b>החלפת מים</b><small>שתי שניות ורשום</small></div></div>
+  <div class="sh-b">
+    <div class="row2">
+      <div class="field"><label>אחוז שהוחלף</label><input id="w-pct" type="number" inputmode="numeric"></div>
+      <div class="field"><label>תאריך</label><input id="w-date" type="date"></div>
+    </div>
+  </div>
+  <div class="sh-f"><div><button class="cta" id="w-save" style="margin:0">רשום</button></div></div>
+</div>
+
 <nav class="tabs">
   <button class="tab on" data-p="home"><span class="i">🏠</span>הבית</button>
   <button class="tab" data-p="fish"><span class="i">🐟</span>דגים</button>
@@ -583,14 +596,21 @@ function shutAll(){document.querySelectorAll('.sheet').forEach(function(s){s.cla
 /* quick water change */
 document.getElementById('a-wc').addEventListener('click',quickWC);
 function quickWC(){
-  var t=cur();if(!t)return;
-  var pct=prompt('כמה אחוז הוחלף?', t.wc&&t.wc.length?t.wc[0].pct:'25');
-  if(pct==null)return;
-  pct=parseInt(pct,10);
-  if(!pct||pct<1||pct>100){toast('אחוז בין 1 ל-100');return;}
-  t.wc=t.wc||[];t.wc.unshift({date:new Date().toISOString().slice(0,10),pct:pct});
-  save();renderAll();toast('נרשם ✓');
+  var t=cur();if(!t){toast('צור אקווריום קודם');return;}
+  document.getElementById('w-pct').value=(t.wc&&t.wc.length)?t.wc[0].pct:25;
+  document.getElementById('w-date').valueAsDate=new Date();
+  document.getElementById('sh-wc').classList.add('up');
 }
+document.getElementById('w-save').addEventListener('click',function(){
+  var t=cur();if(!t)return;
+  var pct=parseInt(document.getElementById('w-pct').value,10);
+  var date=document.getElementById('w-date').value;
+  if(!pct||pct<1||pct>100){toast('אחוז בין 1 ל-100');return;}
+  if(!date){toast('חסר תאריך');return;}
+  t.wc=t.wc||[];t.wc.unshift({date:date,pct:pct});
+  t.wc.sort(function(a,b){return b.date<a.date?-1:1;});
+  save();shutAll();renderAll();toast('נרשם ✓');
+});
 
 /* ───────── photo ───────── */
 function loadPhoto(){
