@@ -1170,11 +1170,11 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
   clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2000);}
 /* ── shop: the real Riverium departments (§281) ── */
 var DEPTS=[
- ['כל המוצרים','','bag'],
+ ['כל המוצרים','כל-המוצרים','bag'],
  ['אקווריומים','אקווריומים','tank'],
- ['ציוד לאקווריום','ציוד-לאקווריום','gear'],
- ['עיצוב ומצע לאקווריום','עיצוב-ומצע-לאקווריום','gravel'],
- ['תכשירים לאקווריום','תכשירים-לאקווריום','beaker'],
+ ['ציוד לאקווריומים','ציוד-לאקווריומים','gear'],
+ ['עיצוב ומצע','עיצוב-ומצע-לאקווריום','gravel'],
+ ['תכשירים','תכשירים-לאקווריום','beaker'],
  ['מזון לדגי נוי','מזון-לדגי-נוי-וחסרי-חוליות','food'],
  ['צמחי מים','צמחי-מים-לאקווריום','plant']
 ];
@@ -1182,7 +1182,7 @@ function renderShop(){
   var h=document.getElementById('shopdepts');h.innerHTML='';
   DEPTS.forEach(function(d){
     var a=document.createElement('a');a.className='dept';
-    a.href='https://riverium.co.il/'+(d[1]?('product-category/'+encodeURIComponent(d[1])+'/'):'');
+    a.href='https://riverium.co.il/collections/'+encodeURIComponent(d[1]);
     a.target='_blank';a.rel='noopener';
     a.innerHTML='<span style="display:flex;align-items:center;gap:10px;color:var(--sky-d)">'+icon(d[2])+'<b style="color:var(--ink)">'+d[0]+'</b></span>'+icon('out');
     h.appendChild(a);
