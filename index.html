@@ -540,7 +540,7 @@ function renderHome(){
   if(!t)return;
   document.getElementById('h-name').textContent=t.name;
   var dims=t.L+' × '+t.W+' × '+t.H+' ס״מ';
-  document.getElementById('h-dims').innerHTML='<span dir="ltr" style="unicode-bidi:embed">'+t.L+' × '+t.W+' × '+t.H+'</span> ס״מ';
+  document.getElementById('h-dims').textContent=t.L+'×'+t.W+'×'+t.H+' ס״מ';
   var v=vol(t);
   document.getElementById('h-net').textContent=(v.net==null?'≤ ':'')+fmt(v.net==null?v.before:v.net);
   document.getElementById('h-note').textContent='ליטר נטו'+(v.net==null?' · אבנים ועץ טרם נשקלו':' · מדוד');
@@ -779,7 +779,7 @@ function renderFish(){
 function renderWater(){
   var t=cur();if(!t)return;
   var v=vol(t);
-  document.getElementById('v-dims').innerHTML='<span dir="ltr" style="unicode-bidi:embed">'+t.L+' × '+t.W+' × '+t.H+'</span>';
+  document.getElementById('v-dims').textContent=t.L+'×'+t.W+'×'+t.H;
   document.getElementById('v-gross').textContent=fmt(v.gross)+' ל׳';
   document.getElementById('v-geo').textContent=fmt(v.geo)+' ל׳';
   document.getElementById('v-sub').textContent='−'+fmt(v.sub)+' ל׳';
