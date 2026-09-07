@@ -1,0 +1,1089 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>AquaCare</title>
+<meta name="robots" content="noindex">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<meta name="theme-color" content="#2A1B6B">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@300;400;500;600&display=swap">
+<style>
+:root{
+  --bg:#F4FAFD; --surf:#FFFFFF; --surf2:#EAF4FA;
+  --ink:#12294D; --ink2:#5A7793; --ink3:#93AABF;
+  --sky:#4BAEDC; --sky-d:#2B8CBE; --navy:#1B3A8C;
+  --line:rgba(27,58,140,.13); --line2:rgba(27,58,140,.07);
+  --ok:#3E9C4E; --ok-f:rgba(62,156,78,.11);
+  --warn:#E0930F; --warn-f:rgba(224,147,15,.13);
+  --crit:#D62B22; --crit-f:rgba(214,43,34,.11);
+  --sky-f:rgba(75,174,220,.12);
+  --sh:0 2px 10px -5px rgba(18,41,77,.3);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#081524; --surf:#0E2135; --surf2:#132B42;
+    --ink:#E8F3FA; --ink2:#9CB6CC; --ink3:#6B8AA5;
+    --sky:#5FBCE6; --sky-d:#3E9DCE; --navy:#8FB4F0;
+    --line:rgba(232,243,250,.13); --line2:rgba(232,243,250,.07);
+    --ok:#5CC46E; --ok-f:rgba(92,196,110,.15);
+    --warn:#F0AB33; --warn-f:rgba(240,171,51,.15);
+    --crit:#F0544A; --crit-f:rgba(240,84,74,.14);
+    --sky-f:rgba(95,188,230,.15);
+    --sh:0 2px 10px -5px rgba(0,0,0,.65);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#081524; --surf:#0E2135; --surf2:#132B42;
+  --ink:#E8F3FA; --ink2:#9CB6CC; --ink3:#6B8AA5;
+  --sky:#5FBCE6; --sky-d:#3E9DCE; --navy:#8FB4F0;
+  --line:rgba(232,243,250,.13); --line2:rgba(232,243,250,.07);
+  --ok:#5CC46E; --ok-f:rgba(92,196,110,.15);
+  --warn:#F0AB33; --warn-f:rgba(240,171,51,.15);
+  --crit:#F0544A; --crit-f:rgba(240,84,74,.14);
+  --sky-f:rgba(95,188,230,.15);
+  --sh:0 2px 10px -5px rgba(0,0,0,.65);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
+  font-family:"Rubik",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column}
+.top{flex:none;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px 8px;
+  max-width:560px;width:100%;margin:0 auto}
+.brand{display:flex;align-items:center;gap:8px;min-width:0}
+.brand img{width:32px;height:32px;border-radius:9px;display:block}
+.wm{font-size:1.1rem;font-weight:500;color:var(--ink);white-space:nowrap}
+.tanksel{flex:1;min-width:0;display:flex;justify-content:flex-end}
+.tanksel select{max-width:100%;font-family:inherit;font-size:.85rem;font-weight:500;color:var(--ink);
+  background:var(--surf);border:1px solid var(--line);border-radius:11px;padding:8px 10px}
+.main{flex:1;overflow-y:auto;padding:0 16px 24px;max-width:560px;width:100%;margin:0 auto}
+
+.hero{border-radius:19px;padding:18px;color:#fff;position:relative;overflow:hidden;
+  background:linear-gradient(160deg,#2B7CC9,#1B3A8C 70%);box-shadow:var(--sh)}
+.hero .ph{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:none;z-index:0}
+.hero .ov{position:absolute;inset:0;display:none;z-index:1;
+  background:linear-gradient(180deg,rgba(4,20,40,.2),rgba(4,20,40,.05) 45%,rgba(6,22,44,.74))}
+.hero.has .ph,.hero.has .ov{display:block}
+.hero.has{min-height:185px;display:flex;flex-direction:column;justify-content:flex-end}
+.hero h1,.hero .sub2,.hero .vol{position:relative;z-index:2}
+.hero.has h1,.hero.has .sub2,.hero.has .vol{text-shadow:0 1px 10px rgba(0,0,0,.55)}
+.cam{position:absolute;top:11px;left:11px;z-index:3;border:none;cursor:pointer;width:36px;height:36px;
+  border-radius:12px;background:rgba(255,255,255,.24);color:#fff;font-size:1.05rem;line-height:1}
+.hero h1{margin:0;font-size:1.15rem;font-weight:500}
+.hero .sub2{margin:5px 0 0;font-size:.8rem;opacity:.88}
+.hero .vol{margin-top:12px;display:flex;align-items:baseline;gap:8px}
+.hero .vol b{font-size:1.9rem;font-weight:400;font-variant-numeric:tabular-nums}
+.hero .vol span{font-size:.74rem;opacity:.85}
+
+.hd{font-size:.92rem;font-weight:500;margin:20px 0 8px;display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.hd small{font-size:.72rem;font-weight:400;color:var(--ink3);text-align:left}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:14px 16px;box-shadow:var(--sh)}
+.hide{display:none}
+
+.state{display:flex;gap:12px;align-items:center}
+.state .ic{width:42px;height:42px;border-radius:13px;flex:none;display:flex;align-items:center;justify-content:center;font-size:1.2rem;background:var(--sky-f)}
+.state h3{margin:0;font-size:1rem;font-weight:500}
+.state p{margin:3px 0 0;font-size:.82rem;color:var(--ink2);line-height:1.55}
+
+.next{border:1.4px solid rgba(75,174,220,.4);background:linear-gradient(170deg,var(--sky-f),var(--surf) 60%)}
+.cta{display:block;width:100%;margin-top:12px;border:none;cursor:pointer;
+  font-family:inherit;font-size:.92rem;font-weight:500;color:#fff;padding:13px 18px;border-radius:14px;
+  background:linear-gradient(150deg,var(--sky),var(--sky-d));box-shadow:0 10px 24px -14px var(--sky-d)}
+.cta:disabled{opacity:.45}
+.ghost{display:block;width:100%;margin-top:8px;padding:11px;border-radius:13px;border:1px solid var(--line);
+  background:var(--surf);color:var(--ink);font-family:inherit;font-size:.85rem;font-weight:500;cursor:pointer}
+.danger{color:var(--crit);border-color:rgba(214,43,34,.35)}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:10px}
+.act{border:1px solid var(--line);background:var(--surf);border-radius:14px;padding:12px;cursor:pointer;
+  font-family:inherit;text-align:right;box-shadow:var(--sh)}
+.act .ai{font-size:1.3rem}
+.act b{display:block;font-size:.85rem;font-weight:500;color:var(--ink);margin-top:6px}
+.act small{display:block;font-size:.7rem;color:var(--ink3);margin-top:2px;line-height:1.4}
+
+.rw{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0}
+.rw+.rw{border-top:1px solid var(--line2)}
+.rw .l{font-size:.85rem}
+.rw .l small{display:block;font-size:.7rem;color:var(--ink3);margin-top:1px}
+.rw .v{font-size:.9rem;font-weight:500;font-variant-numeric:tabular-nums;white-space:nowrap}
+.rw .v.na{color:var(--warn);font-size:.78rem}
+
+.field{margin-bottom:11px}
+.field label{display:block;font-size:.78rem;font-weight:500;color:var(--ink2);margin-bottom:4px}
+.field input,.field select,.field textarea{width:100%;padding:11px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surf);
+  font-family:inherit;font-size:.95rem;color:var(--ink);font-variant-numeric:tabular-nums}
+.field textarea{resize:vertical;font-size:.8rem}
+.field input:focus,.field select:focus,.field textarea:focus{outline:none;border-color:var(--sky);box-shadow:0 0 0 3px var(--sky-f)}
+.field .hint{font-size:.7rem;color:var(--ink3);margin-top:3px;line-height:1.45}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+
+.fish{display:flex;gap:11px;align-items:center;padding:11px 0}
+.fish+.fish{border-top:1px solid var(--line2)}
+.fish .em{width:40px;height:40px;border-radius:12px;flex:none;display:flex;align-items:center;justify-content:center;
+  font-size:1.15rem;background:var(--surf2)}
+.fish .nm{flex:1;min-width:0}
+.fish .nm b{display:block;font-size:.88rem;font-weight:500}
+.fish .nm small{display:block;font-size:.72rem;color:var(--ink3);margin-top:1px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.fish .ct{flex:none;display:flex;align-items:center;gap:6px}
+.fish .ct button{width:26px;height:26px;border-radius:8px;border:1px solid var(--line);background:var(--surf2);
+  font-family:inherit;font-size:.9rem;color:var(--ink2);cursor:pointer;line-height:1}
+.fish .ct .n{min-width:26px;text-align:center;font-size:.9rem;font-weight:500;font-variant-numeric:tabular-nums}
+.fish .ct .n.q{color:var(--warn)}
+.fish .del{border:none;background:none;color:var(--ink3);font-size:.95rem;cursor:pointer;padding:4px}
+
+.tip{border-radius:13px;padding:12px 14px;background:var(--sky-f);border:1px solid rgba(75,174,220,.25);margin-top:10px}
+.tip b{font-size:.83rem;font-weight:500;color:var(--sky-d);display:block}
+.tip p{margin:5px 0 0;font-size:.8rem;line-height:1.6;color:var(--ink2)}
+.note{font-size:.73rem;color:var(--ink3);line-height:1.6;margin:10px 2px 0}
+.flag{border-radius:13px;padding:12px 14px;margin-top:8px;border:1px solid var(--line);background:var(--surf)}
+.flag.w{border-color:rgba(224,147,15,.32);background:var(--warn-f)}
+.flag.c{border-color:rgba(214,43,34,.3);background:var(--crit-f)}
+.flag b{font-size:.84rem;font-weight:500;display:block}
+.flag.w b{color:var(--warn)} .flag.c b{color:var(--crit)}
+.flag p{margin:5px 0 0;font-size:.79rem;line-height:1.6;color:var(--ink2)}
+
+.wc{display:flex;justify-content:space-between;align-items:center;padding:9px 0}
+.wc+.wc{border-top:1px solid var(--line2)}
+.wc .d{font-size:.84rem}
+.wc .d small{color:var(--ink3);font-size:.72rem;display:block}
+.wc .p{font-size:.88rem;font-weight:500;color:var(--sky-d);font-variant-numeric:tabular-nums}
+
+.spark{direction:ltr;margin-top:6px}
+.spark svg{display:block;width:100%;height:auto}
+.cells{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:8px}
+.cell{border:1px solid var(--line);border-radius:13px;padding:10px 11px 7px;background:var(--surf)}
+.cell .ch{display:flex;justify-content:space-between;align-items:baseline}
+.cell .ct2{font-size:.75rem;font-weight:500}
+.cell .cv{font-size:.85rem;font-weight:500;font-variant-numeric:tabular-nums}
+.cell .cs{font-size:.64rem;color:var(--ink3);margin-top:1px}
+
+.tabs{flex:none;display:flex;justify-content:space-around;padding:8px 6px calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line);background:var(--surf)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.62rem;color:var(--ink3);
+  cursor:pointer;background:none;border:none;font-family:inherit;padding:3px 14px}
+.tab .i{font-size:1.25rem;line-height:1}
+.tab.on{color:var(--sky);font-weight:500}
+
+.sheet{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;
+  transform:translateY(100%);transition:transform .3s cubic-bezier(.22,1,.36,1);visibility:hidden}
+.sheet.up{transform:translateY(0);visibility:visible}
+.sh-h{display:flex;align-items:center;gap:11px;padding:14px 16px 11px;flex:none;border-bottom:1px solid var(--line2);
+  max-width:560px;width:100%;margin:0 auto}
+.sh-h .x{width:32px;height:32px;border-radius:10px;border:1px solid var(--line);background:var(--surf);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;font-size:.95rem;color:var(--ink2)}
+.sh-h .ti{flex:1;min-width:0}
+.sh-h .ti b{display:block;font-size:.98rem;font-weight:500}
+.sh-h .ti small{display:block;font-size:.72rem;color:var(--ink3);margin-top:1px}
+.sh-b{flex:1;overflow-y:auto;padding:14px 16px 20px;max-width:560px;width:100%;margin:0 auto}
+.sh-f{flex:none;padding:11px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line2);background:var(--surf)}
+.sh-f>div{max-width:560px;margin:0 auto}
+.steps{display:flex;gap:5px;padding:0 16px 11px;flex:none;max-width:560px;width:100%;margin:0 auto}
+.steps i{flex:1;height:3px;border-radius:99px;background:var(--surf2)}
+.steps i.on{background:var(--sky)}
+
+.opt{display:flex;gap:12px;align-items:center;width:100%;text-align:right;font-family:inherit;cursor:pointer;
+  border:1px solid var(--line);background:var(--surf);border-radius:14px;padding:12px 14px;margin-bottom:8px;box-shadow:var(--sh)}
+.opt .ot{flex:1;min-width:0}
+.opt .ot b{display:block;font-size:.9rem;font-weight:500;color:var(--ink)}
+.opt .ot small{display:block;font-size:.74rem;color:var(--ink3);margin-top:2px;line-height:1.45}
+.opt[aria-pressed="true"]{border-color:var(--sky);background:var(--sky-f)}
+
+.dial{text-align:center;padding:14px 0 6px}
+.dial .t{font-size:3.2rem;font-weight:300;font-variant-numeric:tabular-nums;letter-spacing:-.03em;line-height:1}
+.dial .t.u{color:var(--warn)} .dial .t.l{color:var(--crit)}
+.dial .s{font-size:.86rem;color:var(--ink2);margin-top:7px;min-height:2.4em;line-height:1.55}
+.ring{height:5px;border-radius:99px;background:var(--surf2);overflow:hidden;margin-top:11px;direction:ltr}
+.ring i{display:block;height:100%;border-radius:99px;background:var(--sky);width:0%}
+.ring i.u{background:var(--warn)} .ring i.l{background:var(--crit)}
+.win{display:grid;grid-template-columns:1fr auto auto;gap:9px;align-items:center;padding:10px 13px}
+.win+.win{border-top:1px solid var(--line2)}
+.win .p{font-size:.85rem}
+.win .c{font-size:.73rem;color:var(--ink3);font-variant-numeric:tabular-nums}
+.win .b{font-family:inherit;font-size:.72rem;font-weight:500;padding:5px 11px;border-radius:7px;
+  border:1px solid var(--line);background:var(--surf2);color:var(--ink3);cursor:not-allowed}
+.win.op{background:var(--ok-f)} .win.op .c{color:var(--ok)}
+.win.op .b{background:var(--ok);border-color:var(--ok);color:#fff;cursor:pointer}
+.win.cl{background:var(--warn-f)} .win.cl .c{color:var(--warn)}
+.win.cl .b{background:var(--warn);border-color:var(--warn);color:#12294D;cursor:pointer}
+.win.dn .p{color:var(--ink3);text-decoration:line-through} .win.dn .c{color:var(--ok)}
+.win.ms{background:var(--crit-f)} .win.ms .c{color:var(--crit)}
+.win.ms .b{background:transparent;border-color:var(--crit);color:var(--crit);cursor:pointer}
+
+.res{max-height:300px;overflow-y:auto;border:1px solid var(--line);border-radius:13px;background:var(--surf)}
+.res .ri{display:block;width:100%;text-align:right;font-family:inherit;border:none;background:none;cursor:pointer;
+  padding:10px 13px;border-bottom:1px solid var(--line2)}
+.res .ri b{display:block;font-size:.86rem;font-weight:500;color:var(--ink)}
+.res .ri small{display:block;font-size:.72rem;color:var(--ink3);font-style:italic}
+.toast{position:fixed;bottom:84px;right:50%;transform:translateX(50%);background:var(--ink);color:var(--bg);
+  font-size:.8rem;padding:9px 16px;border-radius:99px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:60}
+.toast.show{opacity:.94}
+.empty{text-align:center;padding:34px 20px}
+.empty .em{font-size:2.6rem}
+.empty h3{margin:12px 0 0;font-size:1.1rem;font-weight:500}
+.empty p{margin:8px auto 0;font-size:.86rem;color:var(--ink2);max-width:32ch;line-height:1.6}
+@media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <span class="brand"><img id="logo" src="icon-192.png" alt=""><span class="wm">AquaCare</span></span>
+  <span class="tanksel"><select id="tanksel" aria-label="בחירת אקווריום"></select></span>
+</div>
+
+<div class="main" id="main">
+
+  <!-- HOME -->
+  <div id="p-home">
+    <div class="hero" id="hero">
+      <img class="ph" id="hero-img" alt="">
+      <div class="ov"></div>
+      <button class="cam" id="cam-btn" aria-label="צלם או העלה תמונה">📷</button>
+      <input type="file" id="cam-file" accept="image/*" capture="environment" style="display:none">
+      <h1 id="h-name"></h1>
+      <p class="sub2" id="h-dims"></p>
+      <div class="vol"><b id="h-net">—</b><span id="h-note"></span></div>
+    </div>
+
+    <div class="hd">מצב</div>
+    <div class="card"><div class="state">
+      <span class="ic" id="st-ic">💧</span>
+      <div><h3 id="st-t"></h3><p id="st-s"></p></div>
+    </div></div>
+
+    <div class="hd">הצעד הבא</div>
+    <div class="card next" id="next-card"></div>
+
+    <div class="hd">פעולות</div>
+    <div class="grid2">
+      <button class="act" data-open="sh-test"><span class="ai">🧪</span><b>בדיקת מים מודרכת</b><small>טיימרים לפי סוג הערכה</small></button>
+      <button class="act" data-open="sh-dose"><span class="ai">💊</span><b>מחשבון מינון</b><small>לפי הנפח האמיתי, לא הקרטון</small></button>
+      <button class="act" data-open="sh-check"><span class="ai">🛟</span><b>בדיקה לפני שינוי</b><small>לפני שמזיזים משהו גדול</small></button>
+      <button class="act" id="a-wc"><span class="ai">💧</span><b>רשום החלפת מים</b><small id="a-wc-s">25% כרגיל?</small></button>
+    </div>
+    <p class="note">הנתונים נשמרים על המכשיר הזה בלבד ואינם נשלחים לשום מקום.</p>
+  </div>
+
+  <!-- FISH -->
+  <div id="p-fish" class="hide">
+    <div class="hd">הדגים <small id="fsum"></small></div>
+    <div class="card" style="padding:4px 16px" id="fishlist"></div>
+    <button class="cta" data-open="sh-fish">+ הוסף דג מהקטלוג</button>
+    <p class="note">הקטלוג: 25,425 מינים (CC0/ויקינתונים). ספירה עם ? היא אומדן — לחיצה על המספר מקבעת.</p>
+    <div class="hd">אובדן</div>
+    <button class="ghost" data-open="sh-loss">רישום אובדן דג</button>
+  </div>
+
+  <!-- WATER -->
+  <div id="p-water" class="hide">
+    <div class="hd">הנפח האמיתי <small>המספר שכל מינון נגזר ממנו</small></div>
+    <div class="card">
+      <div class="rw"><span class="l">גולמי<small id="v-dims"></small></span><span class="v" id="v-gross"></span></div>
+      <div class="rw"><span class="l">מים בפועל<small>עד קו המים</small></span><span class="v" id="v-geo"></span></div>
+      <div class="rw"><span class="l">המצע תופס</span><span class="v" id="v-sub"></span></div>
+      <div class="rw"><span class="l">אבנים ועץ</span><span class="v" id="v-decor"></span></div>
+      <div class="rw" style="background:var(--ok-f);margin:0 -16px -14px;padding:12px 16px;border-radius:0 0 15px 15px">
+        <span class="l"><b style="font-weight:500">נטו לחישובים</b></span><span class="v" style="color:var(--ok)" id="v-net"></span></div>
+    </div>
+    <button class="ghost" data-open="sh-tank">עריכת מידות המיכל</button>
+
+    <div class="hd">יעדי המים <small id="tg-src"></small></div>
+    <div class="card" style="padding:6px 16px" id="tg-list"></div>
+    <p class="note" id="tg-note"></p>
+
+    <div class="hd">מגמות <small id="ch-sum"></small></div>
+    <div class="cells" id="charts"></div>
+
+    <div class="hd">רישום בדיקה ידני <small>mg/L · ריק = לא נבדק</small></div>
+    <div class="card">
+      <div class="row2">
+        <div class="field"><label>אמוניה</label><input id="t-nh3" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>ניטריט</label><input id="t-no2" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>ניטראט</label><input id="t-no3" type="number" step="1" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>פוספאט</label><input id="t-po4" type="number" step="0.1" inputmode="decimal" placeholder="—"></div>
+      </div>
+      <div class="field"><label>תאריך</label><input id="t-date" type="date"></div>
+      <button class="cta" id="t-save" style="margin-top:2px">שמור בדיקה</button>
+    </div>
+    <div class="card" style="margin-top:12px;padding:6px 16px" id="t-list"></div>
+
+    <div class="hd">החלפות מים <small id="wc-sum"></small></div>
+    <div class="card" style="margin-top:0;padding:6px 16px" id="wc-list"></div>
+  </div>
+
+  <!-- MORE -->
+  <div id="p-more" class="hide">
+    <div class="hd">האקווריומים שלי</div>
+    <div class="card" style="padding:6px 16px" id="tanklist"></div>
+    <button class="cta" data-open="sh-tank" data-newtank="1">+ אקווריום חדש</button>
+
+    <div class="hd">גיבוי ושחזור</div>
+    <div class="card">
+      <button class="ghost" id="bk-copy" style="margin-top:0">📋 העתק גיבוי (הדבק לפתק/וואטסאפ לעצמך)</button>
+      <div class="field" style="margin-top:10px"><label>שחזור מגיבוי</label>
+        <textarea id="bk-in" rows="3" placeholder="הדבק כאן גיבוי"></textarea></div>
+      <button class="ghost" id="bk-load">שחזר מהטקסט</button>
+    </div>
+    <p class="note">הגיבוי כולל הכול חוץ מתמונות (הן גדולות מדי לטקסט). הנתונים חיים בדפדפן הזה בלבד.</p>
+
+    <div class="hd">על האפליקציה</div>
+    <div class="card">
+      <p style="margin:0;font-size:.82rem;line-height:1.7;color:var(--ink2)">
+      <b style="color:var(--ink)">AquaCare</b> · מבית Riverium · גרסה 0.1<br>
+      קטלוג מינים: ויקינתונים (CC0) · יעדי מים: ערכי מומחה, ניתנים לעריכה<br>
+      מה שלא אומת — לא מוצג כבטוח. אף פעם.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- SHEET: tank wizard -->
+<div class="sheet" id="sh-tank">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b id="tk-title">אקווריום חדש</b><small>מידות ונפח — פעם אחת, ואז הכול מחושב</small></div></div>
+  <div class="sh-b">
+    <div class="field"><label>שם</label><input id="k-name" type="text" placeholder="אקווריום הסלון"></div>
+    <div class="row3">
+      <div class="field"><label>אורך (ס״מ)</label><input id="k-l" type="number" inputmode="decimal"></div>
+      <div class="field"><label>רוחב</label><input id="k-w" type="number" inputmode="decimal"></div>
+      <div class="field"><label>גובה</label><input id="k-h" type="number" inputmode="decimal"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>גובה קו המים (ס״מ)</label><input id="k-wl" type="number" inputmode="decimal">
+        <div class="hint">מהתחתית עד פני המים. ריק = כמו הגובה</div></div>
+      <div class="field"><label>עומק המצע (ס״מ)</label><input id="k-sb" type="number" inputmode="decimal">
+        <div class="hint">חצץ/חול. ריק = אין</div></div>
+    </div>
+    <div class="field"><label>אבנים ועץ (ק״ג ≈ ליטר)</label><input id="k-dc" type="number" inputmode="decimal" placeholder="ריק = לא ידוע">
+      <div class="hint">לא יודע? השאר ריק — נחשב בזהירות ונציג "עד". כשתשקול, תעדכן.</div></div>
+    <div class="card" id="k-calc" style="background:var(--sky-f);border-color:rgba(75,174,220,.3)"></div>
+  </div>
+  <div class="sh-f"><div><button class="cta" id="k-save">שמור אקווריום</button></div></div>
+</div>
+
+<!-- SHEET: add fish -->
+<div class="sheet" id="sh-fish">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b>הוספת דג</b><small>חיפוש ב-25,425 מינים — עברית, מדעי או שם נפוץ</small></div></div>
+  <div class="sh-b">
+    <div class="field"><label>חיפוש</label><input id="f-q" type="text" placeholder="דיסקוס / Corydoras / guppy…" autocomplete="off"></div>
+    <div class="res hide" id="f-res"></div>
+    <div id="f-pick" class="hide">
+      <div class="card"><b id="f-pn" style="font-size:.95rem;font-weight:500"></b>
+        <small id="f-ps" style="display:block;color:var(--ink3);font-style:italic;margin-top:2px"></small></div>
+      <div class="row2" style="margin-top:10px">
+        <div class="field"><label>כמה?</label><input id="f-count" type="number" inputmode="numeric" value="1"></div>
+        <div class="field"><label>הספירה מדויקת?</label>
+          <select id="f-sure"><option value="1">כן</option><option value="0">בערך</option></select></div>
+      </div>
+    </div>
+    <p class="note">לא נמצא? הקלד שם חופשי ולחץ "הוסף כשם חופשי" — יסומן ככזה עד זיהוי.</p>
+    <button class="ghost" id="f-free">הוסף כשם חופשי</button>
+  </div>
+  <div class="sh-f"><div><button class="cta" id="f-add" disabled>הוסף לאקווריום</button></div></div>
+</div>
+
+<!-- SHEET: guided test -->
+<div class="sheet" id="sh-test">
+  <div class="sh-h"><button class="x" id="ts-x">✕</button>
+    <div class="ti"><b>בדיקת מים מודרכת</b><small id="ts-sub">בחר את סוג הערכה שלך</small></div></div>
+  <div class="sh-b" id="ts-body"></div>
+  <div class="sh-f"><div id="ts-foot"></div></div>
+</div>
+
+<!-- SHEET: dosing -->
+<div class="sheet" id="sh-dose">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b>מחשבון מינון</b><small>מהתווית של המוצר — אל הנפח האמיתי שלך</small></div></div>
+  <div class="sh-b">
+    <p style="margin:0 0 12px;font-size:.85rem;color:var(--ink2);line-height:1.6">
+      העתק מהתווית: כמה מ״ל (או טיפות) לכמה ליטר. אנחנו נתרגם לנפח <b>האמיתי</b> של המיכל שלך.</p>
+    <div class="row2">
+      <div class="field"><label>מינון מהתווית</label><input id="d-amt" type="number" inputmode="decimal" placeholder="5">
+        <div class="hint">מ״ל / טיפות / כפית — מה שכתוב</div></div>
+      <div class="field"><label>לכל כמה ליטר</label><input id="d-per" type="number" inputmode="decimal" placeholder="100"></div>
+    </div>
+    <div class="card" id="d-out" style="background:var(--sky-f);border-color:rgba(75,174,220,.3)"></div>
+    <div class="flag w hide" id="d-warn"></div>
+  </div>
+  <div class="sh-f"><div><button class="ghost" data-close style="margin:0">סגור</button></div></div>
+</div>
+
+<!-- SHEET: pre-action check -->
+<div class="sheet" id="sh-check">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b>בדיקה לפני שינוי</b><small>מה אתה מתכנן לעשות?</small></div></div>
+  <div class="sh-b" id="ck-body"></div>
+  <div class="sh-f"><div id="ck-foot"><button class="ghost" data-close style="margin:0">סגור</button></div></div>
+</div>
+
+<!-- SHEET: loss -->
+<div class="sheet" id="sh-loss">
+  <div class="sh-h"><button class="x" data-close>✕</button>
+    <div class="ti"><b>רישום אובדן</b><small>בשקט. בלי טפסים מיותרים.</small></div></div>
+  <div class="sh-b" id="ls-body"></div>
+  <div class="sh-f"><div><button class="ghost" data-close style="margin:0">סגור</button></div></div>
+</div>
+
+<nav class="tabs">
+  <button class="tab on" data-p="home"><span class="i">🏠</span>הבית</button>
+  <button class="tab" data-p="fish"><span class="i">🐟</span>דגים</button>
+  <button class="tab" data-p="water"><span class="i">💧</span>מים</button>
+  <button class="tab" data-p="more"><span class="i">⚙️</span>עוד</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+var KEY='aquacare-v1', PKEY='aquacare-photo-';
+
+/* ───────── storage ───────── */
+function loadDB(){
+  try{var s=localStorage.getItem(KEY); if(s) return JSON.parse(s);}catch(e){}
+  // migrate a same-origin "Riverium שלי" record if one exists
+  try{
+    var o=localStorage.getItem('riverium-personal-v1');
+    if(o){var d=JSON.parse(o);
+      return {v:1,cur:0,tanks:[{id:1,name:(d.tank&&d.tank.name)||'האקווריום שלי',
+        L:d.tank.L,W:d.tank.W,H:d.tank.H,waterline:d.tank.waterline,substrate:d.tank.substrate,decorL:d.tank.decorL,
+        fish:d.fish||[],wc:d.wc||[],tests:d.tests||[],losses:[],targets:null}]};}
+  }catch(e){}
+  return {v:1,cur:0,tanks:[]};
+}
+var DB=loadDB();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast('שמירה נכשלה — אין מקום');}}
+function cur(){return DB.tanks[DB.cur]||null;}
+
+/* owner expert defaults — recorded 28.8.2026, editable per tank */
+var DEF_TARGETS=[
+  {k:'nh3',he:'אמוניה', min:0,  max:0.05},
+  {k:'no2',he:'ניטריט', min:0,  max:0.05},
+  {k:'no3',he:'ניטראט', min:1,  max:30},
+  {k:'po4',he:'פוספאט', min:0.1,max:1.2}
+];
+function targets(t){return (t&&t.targets)||DEF_TARGETS;}
+
+/* ───────── volume (§17): unknown is unknown, never zero ───────── */
+function vol(t){
+  var gross=t.L*t.W*t.H/1000;
+  var wl=(t.waterline==null||isNaN(t.waterline))?t.H:t.waterline;
+  var sb=(t.substrate==null||isNaN(t.substrate))?0:t.substrate;
+  wl=Math.min(wl,t.H);
+  var geo=t.L*t.W*wl/1000, sub=t.L*t.W*sb/1000;
+  var before=Math.max(0,geo-sub);
+  var net=(t.decorL==null)?null:Math.max(0,before-t.decorL);
+  return {gross:gross,geo:geo,sub:sub,before:before,net:net};
+}
+function fmt(n){return (Math.round(n*10)/10).toLocaleString('he-IL');}
+function netLabel(t){var v=vol(t);return v.net==null?('עד '+fmt(v.before)+' ל׳'):(fmt(v.net)+' ל׳');}
+function netForDose(t){var v=vol(t);return {val:v.net==null?v.before:v.net, exact:v.net!=null, before:v.before};}
+
+/* ───────── tests judgement ───────── */
+function judge(t,k,v){
+  var tg=targets(t).filter(function(x){return x.k===k;})[0];
+  if(!tg||v==null||isNaN(v))return null;
+  if(v>tg.max)return {cls:'w',txt:'מעל — סטרס'};
+  if(v<tg.min)return {cls:'',txt:'מתחת לטווח'};
+  return {cls:'g',txt:'בטווח'};
+}
+
+/* ───────── render: header/tank selector ───────── */
+function renderSel(){
+  var sel=document.getElementById('tanksel');sel.innerHTML='';
+  DB.tanks.forEach(function(t,i){
+    var o=document.createElement('option');o.value=i;o.textContent=t.name;if(i===DB.cur)o.selected=true;sel.appendChild(o);
+  });
+  var o=document.createElement('option');o.value='new';o.textContent='+ אקווריום חדש';sel.appendChild(o);
+  sel.disabled=!DB.tanks.length;
+}
+document.getElementById('tanksel').addEventListener('change',function(e){
+  if(e.target.value==='new'){openTank(true);renderSel();return;}
+  DB.cur=+e.target.value;save();renderAll();
+});
+
+/* ───────── home ───────── */
+function renderHome(){
+  var t=cur();
+  if(!t){
+    document.getElementById('p-home').innerHTML=
+      '<div class="empty"><div class="em">🐠</div><h3>ברוך הבא ל-AquaCare</h3>'+
+      '<p>נתחיל מהאקווריום שלך: מידות, קו מים, מצע — ומכאן הכול מחושב אמיתי.</p>'+
+      '<button class="cta" style="max-width:280px;margin:18px auto 0" data-open="sh-tank" data-newtank="1">צור את האקווריום הראשון</button></div>';
+    return;
+  }
+  document.getElementById('h-name').textContent=t.name;
+  var dims=t.L+' × '+t.W+' × '+t.H+' ס״מ';
+  document.getElementById('h-dims').innerHTML='<bdi style="direction:ltr;unicode-bidi:isolate">'+t.L+' × '+t.W+' × '+t.H+'</bdi> ס״מ';
+  var v=vol(t);
+  document.getElementById('h-net').textContent=(v.net==null?'≤ ':'')+fmt(v.net==null?v.before:v.net);
+  document.getElementById('h-note').textContent='ליטר נטו'+(v.net==null?' · אבנים ועץ טרם נשקלו':' · מדוד');
+  loadPhoto();
+
+  var lt=t.tests&&t.tests.length?t.tests[0]:null;
+  var stress=lt?targets(t).filter(function(x){var val=lt[x.k];return val!=null&&val>x.max;}):[];
+  var last=t.wc&&t.wc.length?t.wc[0]:null;
+  var ic,tt,ts;
+  if(lt&&stress.length){ic='⚠️';tt='ערך באזור סטרס: '+stress.map(function(x){return x.he;}).join(', ');
+    ts='מעל היעד. סטרס מצטבר מחליש חיסונית — שקול החלפת מים ובדיקה חוזרת.';}
+  else if(lt){ic='✅';tt='המים בטווח';ts='לפי הבדיקה האחרונה, כל מה שנמדד בתחום היעדים.';}
+  else if(last){var days=Math.floor((Date.now()-new Date(last.date).getTime())/864e5);
+    if(days<=8){ic='💧';tt='שגרת המים נשמרת';ts='החלפה לפני '+(days===0?'פחות מיום':days+' ימים')+' ('+last.pct+'%). את המים עצמם עוד לא בדקנו.';}
+    else{ic='⏰';tt='עברו '+days+' ימים מההחלפה';ts='אם החלפת ולא נרשם — שתי לחיצות בכפתור למטה.';}}
+  else{ic='👋';tt='מתחילים';ts='רשום החלפת מים או בדיקה ראשונה — ומכאן נעקוב יחד.';}
+  document.getElementById('st-ic').textContent=ic;
+  document.getElementById('st-t').textContent=tt;
+  document.getElementById('st-s').textContent=ts;
+
+  var q=(t.fish||[]).filter(function(f){return f.q||f.c==null;}).length;
+  var nc=document.getElementById('next-card');
+  if(!t.wc||!t.wc.length){
+    nc.innerHTML='<div class="state"><span class="ic">💧</span><div><h3>החלפת המים הראשונה</h3><p>רשום — וממנה נבנה את השגרה.</p></div></div><button class="cta" id="nx-wc">רשום החלפה</button>';
+  }else if(!t.tests||!t.tests.length){
+    nc.innerHTML='<div class="state"><span class="ic">🧪</span><div><h3>בדיקת מים ראשונה</h3><p>יש יעדים להשוות מולם. מודרך, עם טיימר.</p></div></div><button class="cta" data-open="sh-test">בוא נתחיל</button>';
+  }else if(q>0){
+    nc.innerHTML='<div class="state"><span class="ic">🐟</span><div><h3>'+q+' רשומות דגים משוערות</h3><p>בהאכלה הבאה — ספור וקבע במסך הדגים.</p></div></div><button class="cta" id="nx-fish">לרשימת הדגים</button>';
+  }else if(cur().decorL==null){
+    nc.innerHTML='<div class="state"><span class="ic">🪨</span><div><h3>שקילת אבנים ועץ</h3><p>בניקוי הבא — וזה מקבע את הנפח למדויק.</p></div></div><button class="cta" data-open="sh-tank">לעדכון הנפח</button>';
+  }else{
+    nc.innerHTML='<div class="state"><span class="ic">✅</span><div><h3>הכול רשום</h3><p>המשך שגרה: בדיקה שבועית והחלפה שבועית.</p></div></div>';
+  }
+  var lw=document.getElementById('a-wc-s');
+  lw.textContent=last?(last.pct+'% בפעם הקודמת'):'25% כרגיל?';
+}
+document.addEventListener('click',function(e){
+  if(e.target.closest('#nx-wc'))quickWC();
+  if(e.target.closest('#nx-fish'))go('fish');
+  var op=e.target.closest('[data-open]');
+  if(op){var id=op.getAttribute('data-open');
+    if(id==='sh-tank')openTank(op.getAttribute('data-newtank')==='1');
+    else if(id==='sh-test'){tsReset();}
+    else if(id==='sh-check'){ckRender();}
+    else if(id==='sh-loss'){lsRender();}
+    else if(id==='sh-dose'){doseRender();}
+    else if(id==='sh-fish'){fOpen();}
+    document.getElementById(id).classList.add('up');}
+  if(e.target.closest('[data-close]'))shutAll();
+});
+function shutAll(){document.querySelectorAll('.sheet').forEach(function(s){s.classList.remove('up');});}
+
+/* quick water change */
+document.getElementById('a-wc').addEventListener('click',quickWC);
+function quickWC(){
+  var t=cur();if(!t)return;
+  var pct=prompt('כמה אחוז הוחלף?', t.wc&&t.wc.length?t.wc[0].pct:'25');
+  if(pct==null)return;
+  pct=parseInt(pct,10);
+  if(!pct||pct<1||pct>100){toast('אחוז בין 1 ל-100');return;}
+  t.wc=t.wc||[];t.wc.unshift({date:new Date().toISOString().slice(0,10),pct:pct});
+  save();renderAll();toast('נרשם ✓');
+}
+
+/* ───────── photo ───────── */
+function loadPhoto(){
+  var t=cur();if(!t)return;
+  try{var d=localStorage.getItem(PKEY+t.id);
+    var h=document.getElementById('hero');
+    if(d){document.getElementById('hero-img').src=d;h.classList.add('has');}
+    else{h.classList.remove('has');document.getElementById('hero-img').removeAttribute('src');}
+  }catch(e){}
+}
+document.getElementById('cam-btn').addEventListener('click',function(){document.getElementById('cam-file').click();});
+document.getElementById('cam-file').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var img=new Image(),url=URL.createObjectURL(f);
+  img.onload=function(){
+    var max=1400,sc=Math.min(1,max/Math.max(img.width,img.height));
+    var c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    try{localStorage.setItem(PKEY+cur().id,c.toDataURL('image/jpeg',.8));}catch(err){toast('אין מקום לתמונה');return;}
+    loadPhoto();toast('התמונה נשמרה ✓');e.target.value='';
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);toast('קריאת התמונה נכשלה');};
+  img.src=url;
+});
+
+/* ───────── tank wizard ───────── */
+var editingNew=false;
+function openTank(isNew){
+  editingNew=!!isNew||!cur();
+  var t=editingNew?{name:'',L:'',W:'',H:'',waterline:'',substrate:'',decorL:''}:cur();
+  document.getElementById('tk-title').textContent=editingNew?'אקווריום חדש':'עריכת '+t.name;
+  [['k-name','name'],['k-l','L'],['k-w','W'],['k-h','H'],['k-wl','waterline'],['k-sb','substrate'],['k-dc','decorL']]
+    .forEach(function(p){var el=document.getElementById(p[0]);el.value=(t[p[1]]==null?'':t[p[1]]);});
+  kCalc();
+}
+function kv(id){var v=document.getElementById(id).value;return v===''?null:parseFloat(v);}
+function kCalc(){
+  var L=kv('k-l'),W=kv('k-w'),H=kv('k-h');
+  var e=document.getElementById('k-calc');
+  if(!L||!W||!H){e.innerHTML='<p style="margin:0;font-size:.8rem;color:var(--ink2)">הזן מידות — והנפח יחושב כאן, חי.</p>';return;}
+  var t={L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc')};
+  var v=vol(t);
+  e.innerHTML='<div style="font-size:.74rem;color:var(--ink2)">נטו לחישובים</div>'+
+    '<div style="font-size:1.5rem;font-weight:500;font-variant-numeric:tabular-nums;margin-top:2px">'+(v.net==null?'עד ':'')+fmt(v.net==null?v.before:v.net)+' ליטר</div>'+
+    '<div style="font-size:.73rem;color:var(--ink2);margin-top:5px">גולמי '+fmt(v.gross)+' · מים '+fmt(v.geo)+' · מצע −'+fmt(v.sub)+
+    (t.decorL==null?' · <b>אבנים ועץ לא ידוע — מוצג ״עד״</b>':' · אבנים −'+fmt(t.decorL))+'</div>';
+}
+['k-l','k-w','k-h','k-wl','k-sb','k-dc'].forEach(function(i){document.getElementById(i).addEventListener('input',kCalc);});
+document.getElementById('k-save').addEventListener('click',function(){
+  var name=document.getElementById('k-name').value.trim();
+  var L=kv('k-l'),W=kv('k-w'),H=kv('k-h');
+  if(!name){toast('חסר שם');return;}
+  if(!L||!W||!H||L<5||W<5||H<5||L>1000){toast('בדוק מידות');return;}
+  var data={name:name,L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc')};
+  if(editingNew){
+    var id=Date.now();
+    DB.tanks.push({id:id,name:name,L:L,W:W,H:H,waterline:data.waterline,substrate:data.substrate,decorL:data.decorL,
+      fish:[],wc:[],tests:[],losses:[],targets:null});
+    DB.cur=DB.tanks.length-1;
+  }else{Object.assign(cur(),data);}
+  save();shutAll();renderAll();toast('נשמר ✓');
+});
+
+/* ───────── fish ───────── */
+var INDEX=null,INDEX_ERR=false;
+function ensureIndex(cb){
+  if(INDEX){cb();return;}
+  fetch('species-index.json').then(function(r){return r.json();}).then(function(j){INDEX=j;cb();})
+    .catch(function(){INDEX_ERR=true;cb();});
+}
+function norm(s){return (s||'').toLowerCase().trim();}
+var picked=null;
+function fOpen(){
+  picked=null;
+  document.getElementById('f-q').value='';
+  document.getElementById('f-res').classList.add('hide');
+  document.getElementById('f-pick').classList.add('hide');
+  document.getElementById('f-add').disabled=true;
+  ensureIndex(function(){});
+}
+document.getElementById('f-q').addEventListener('input',function(){
+  var q=norm(this.value);
+  var box=document.getElementById('f-res');
+  if(q.length<2){box.classList.add('hide');return;}
+  ensureIndex(function(){
+    if(!INDEX){box.classList.add('hide');return;}
+    var hits=[],qh=q;
+    for(var i=0;i<INDEX.length&&hits.length<80;i++){
+      var r=INDEX[i],sci=norm(r.s),he=r.h||'',en=norm(r.e);
+      var score=-1;
+      if(sci.indexOf(qh)===0)score=0;
+      else if(he&&he.indexOf(q)===0)score=0;
+      else if(sci.indexOf(qh)>=0)score=1;
+      else if(he&&he.indexOf(q)>=0)score=1;
+      else if(en&&en.indexOf(qh)>=0)score=2;
+      if(score>=0)hits.push([score,r]);
+    }
+    hits.sort(function(a,b){return a[0]-b[0];});
+    hits=hits.slice(0,25);
+    box.innerHTML='';
+    if(!hits.length){box.innerHTML='<div style="padding:12px;font-size:.8rem;color:var(--ink3)">לא נמצא — אפשר להוסיף כשם חופשי</div>';}
+    hits.forEach(function(h){
+      var r=h[1],b=document.createElement('button');b.className='ri';
+      b.innerHTML='<b>'+(r.h?r.h+' · ':'')+(r.e||r.s)+'</b><small>'+r.s+(r.f?' · '+r.f:'')+'</small>';
+      b.addEventListener('click',function(){
+        picked={n:r.h||r.e||r.s,s:r.s,free:false};
+        document.getElementById('f-pn').textContent=picked.n;
+        document.getElementById('f-ps').textContent=r.s+(r.f?' · '+r.f:'');
+        document.getElementById('f-pick').classList.remove('hide');
+        document.getElementById('f-add').disabled=false;
+        box.classList.add('hide');
+      });
+      box.appendChild(b);
+    });
+    box.classList.remove('hide');
+  });
+});
+document.getElementById('f-free').addEventListener('click',function(){
+  var q=document.getElementById('f-q').value.trim();
+  if(q.length<2){toast('הקלד שם קודם');return;}
+  picked={n:q,s:'שם חופשי — טרם זוהה',free:true};
+  document.getElementById('f-pn').textContent=q;
+  document.getElementById('f-ps').textContent='שם חופשי — יסומן עד זיהוי';
+  document.getElementById('f-pick').classList.remove('hide');
+  document.getElementById('f-add').disabled=false;
+});
+document.getElementById('f-add').addEventListener('click',function(){
+  if(!picked)return;
+  var t=cur();if(!t){toast('צור אקווריום קודם');return;}
+  var c=parseInt(document.getElementById('f-count').value,10)||1;
+  var sure=document.getElementById('f-sure').value==='1';
+  t.fish=t.fish||[];
+  t.fish.push({id:Date.now(),n:picked.n,s:picked.s,e:picked.free?'❓':'🐟',c:c,q:!sure,added:new Date().toISOString().slice(0,10)});
+  save();shutAll();renderFish();renderHome();toast('נוסף ✓');
+});
+function renderFish(){
+  var t=cur(),h=document.getElementById('fishlist');
+  if(!t){h.innerHTML='';document.getElementById('fsum').textContent='';return;}
+  h.innerHTML='';var total=0,approx=false;
+  (t.fish||[]).forEach(function(f){
+    if(f.c!=null)total+=f.c; if(f.q||f.c==null)approx=true;
+    var d=document.createElement('div');d.className='fish';
+    d.innerHTML='<span class="em">'+(f.e||'🐟')+'</span>'+
+      '<span class="nm"><b></b><small></small></span>'+
+      '<span class="ct"><button data-a="minus">−</button>'+
+      '<span class="n'+(f.q?' q':'')+'" data-a="fix" title="לחץ לקיבוע">'+(f.c==null?'?':f.c+(f.q?'?':''))+'</span>'+
+      '<button data-a="plus">+</button></span>'+
+      '<button class="del" data-a="del" aria-label="הסר">✕</button>';
+    d.querySelector('.nm b').textContent=f.n;
+    d.querySelector('.nm small').textContent=(f.s||'')+(f.added?' · מ-'+f.added:'');
+    d.addEventListener('click',function(e){
+      var a=e.target.getAttribute('data-a');if(!a)return;
+      if(a==='plus'){f.c=(f.c==null?1:f.c+1);f.q=false;}
+      if(a==='minus'&&f.c!=null&&f.c>0)f.c--,f.q=false;
+      if(a==='fix'&&f.c!=null)f.q=false;
+      if(a==='del'&&confirm('להסיר את "'+f.n+'"?'))t.fish=t.fish.filter(function(x){return x!==f;});
+      save();renderFish();renderHome();
+    });
+    h.appendChild(d);
+  });
+  if(!(t.fish||[]).length)h.innerHTML='<p class="note" style="margin:12px 0">עוד אין דגים רשומים.</p>';
+  document.getElementById('fsum').textContent=(t.fish||[]).length+' סוגים · '+(approx?'~':'')+total+' דגים';
+}
+
+/* ───────── water page ───────── */
+function renderWater(){
+  var t=cur();if(!t)return;
+  var v=vol(t);
+  document.getElementById('v-dims').innerHTML='<bdi style="direction:ltr;unicode-bidi:isolate">'+t.L+' × '+t.W+' × '+t.H+'</bdi>';
+  document.getElementById('v-gross').textContent=fmt(v.gross)+' ל׳';
+  document.getElementById('v-geo').textContent=fmt(v.geo)+' ל׳';
+  document.getElementById('v-sub').textContent='−'+fmt(v.sub)+' ל׳';
+  var dEl=document.getElementById('v-decor');
+  if(t.decorL==null){dEl.textContent='לא ידוע';dEl.className='v na';}
+  else{dEl.textContent='−'+fmt(t.decorL)+' ל׳';dEl.className='v';}
+  document.getElementById('v-net').textContent=netLabel(t);
+
+  var tl=document.getElementById('tg-list');tl.innerHTML='';
+  targets(t).forEach(function(x){
+    var d=document.createElement('div');d.className='rw';
+    d.innerHTML='<span class="l">'+x.he+'</span><span class="v">'+x.min+' – '+x.max+'</span>';
+    tl.appendChild(d);
+  });
+  document.getElementById('tg-src').textContent=t.targets?'מותאם אישית':'ערכי מומחה · 28.8.2026';
+  document.getElementById('tg-note').textContent='מעל המקסימום = אזור סטרס (פגיעה חיסונית מצטברת, תלוי ברגישות המין). מתחת למינימום = הערה בלבד.';
+
+  renderCharts();renderTests();renderWC();
+}
+function renderCharts(){
+  var t=cur(),h=document.getElementById('charts');h.innerHTML='';
+  var tests=(t.tests||[]).slice().reverse(); // oldest→newest
+  var any=false;
+  targets(t).forEach(function(tg){
+    var pts=tests.map(function(ts){return ts[tg.k];}).filter(function(v){return v!=null;});
+    if(pts.length<2)return;
+    any=true;
+    var lo=Math.min.apply(null,pts.concat([tg.min])),hi=Math.max.apply(null,pts.concat([tg.max]));
+    if(hi-lo<0.0001)hi=lo+1;
+    var W=150,H=46,P=4;
+    function X(i){return P+(W-2*P)*i/(pts.length-1);}
+    function Y(v){return P+(H-2*P)*(1-(v-lo)/(hi-lo));}
+    var line=pts.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1);}).join(' ');
+    var last=pts[pts.length-1],j=judge(t,tg.k,last);
+    var col=j&&j.cls==='w'?'var(--warn)':'var(--ok)';
+    var bandTop=Y(Math.min(tg.max,hi)),bandBot=Y(Math.max(tg.min,lo));
+    var cell=document.createElement('div');cell.className='cell';
+    cell.innerHTML='<div class="ch"><span class="ct2">'+tg.he+'</span><span class="cv" style="color:'+col+'">'+last+'</span></div>'+
+      '<div class="cs">'+(j?j.txt:'')+'</div>'+
+      '<div class="spark"><svg viewBox="0 0 '+W+' '+H+'">'+
+      '<rect x="'+P+'" y="'+bandTop.toFixed(1)+'" width="'+(W-2*P)+'" height="'+Math.max(0,(bandBot-bandTop)).toFixed(1)+'" fill="var(--ok-f)"/>'+
+      '<polyline points="'+line+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
+      '<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(last).toFixed(1)+'" r="2.6" fill="'+col+'"/></svg></div>';
+    h.appendChild(cell);
+  });
+  document.getElementById('ch-sum').textContent=any?'הרצועה הירוקה = היעד':'יופיעו אחרי שתי בדיקות';
+  if(!any)h.innerHTML='<p class="note" style="grid-column:1/-1;margin:4px 0">גרף לכל מדד — מהבדיקה השנייה והלאה.</p>';
+}
+function renderTests(){
+  var t=cur(),h=document.getElementById('t-list');h.innerHTML='';
+  if(!t.tests||!t.tests.length){h.innerHTML='<p class="note" style="margin:10px 0">עוד אין בדיקות.</p>';return;}
+  t.tests.slice(0,6).forEach(function(ts){
+    var d=document.createElement('div');d.style.cssText='padding:10px 0;border-bottom:1px solid var(--line2)';
+    var dt=new Date(ts.date).toLocaleDateString('he-IL',{day:'numeric',month:'long'});
+    var rows='';
+    targets(t).forEach(function(tg){
+      var v=ts[tg.k];if(v==null)return;
+      var j=judge(t,tg.k,v);
+      var col=j.cls==='g'?'var(--ok)':j.cls==='w'?'var(--warn)':'var(--ink2)';
+      rows+='<span style="display:inline-flex;align-items:center;gap:5px;margin-left:12px;font-size:.8rem">'+
+        '<b style="font-weight:500">'+tg.he+'</b> <span style="font-variant-numeric:tabular-nums">'+v+'</span>'+
+        '<span style="font-size:.68rem;color:'+col+'">'+j.txt+'</span></span>';
+    });
+    d.innerHTML='<div style="font-size:.78rem;color:var(--ink3);margin-bottom:4px">'+dt+
+      (ts.method?' · '+ts.method:'')+'</div>'+rows;
+    h.appendChild(d);
+  });
+}
+document.getElementById('t-date').valueAsDate=new Date();
+document.getElementById('t-save').addEventListener('click',function(){
+  var t=cur();if(!t)return;
+  function g(id){var v=document.getElementById(id).value;return v===''?null:parseFloat(v);}
+  var ts={date:document.getElementById('t-date').value,nh3:g('t-nh3'),no2:g('t-no2'),no3:g('t-no3'),po4:g('t-po4')};
+  if(!ts.date){toast('חסר תאריך');return;}
+  if(ts.nh3==null&&ts.no2==null&&ts.no3==null&&ts.po4==null){toast('לא הוזן ערך');return;}
+  var bad=false;['nh3','no2','no3','po4'].forEach(function(k){var v=ts[k];if(v!=null&&(v<0||v>1000))bad=true;});
+  if(bad){toast('ערך לא סביר');return;}
+  t.tests=t.tests||[];t.tests.unshift(ts);
+  t.tests.sort(function(a,b){return b.date<a.date?-1:1;});
+  save();renderWater();renderHome();
+  ['t-nh3','t-no2','t-no3','t-po4'].forEach(function(i){document.getElementById(i).value='';});
+  var stress=targets(t).some(function(tg){var v=ts[tg.k];return v!=null&&v>tg.max;});
+  toast(stress?'נשמר — יש ערך באזור סטרס':'נשמר — בטווח ✓');
+});
+function renderWC(){
+  var t=cur(),h=document.getElementById('wc-list');h.innerHTML='';
+  if(!t.wc||!t.wc.length){h.innerHTML='<p class="note" style="margin:10px 0">עוד אין רישומים. הכפתור במסך הבית.</p>';}
+  (t.wc||[]).slice(0,8).forEach(function(w){
+    var d=document.createElement('div');d.className='wc';
+    var dt=new Date(w.date);
+    d.innerHTML='<span class="d">'+dt.toLocaleDateString('he-IL',{day:'numeric',month:'long'})+
+      '<small>'+dt.toLocaleDateString('he-IL',{weekday:'long'})+'</small></span><span class="p">'+w.pct+'%</span>';
+    h.appendChild(d);
+  });
+  document.getElementById('wc-sum').textContent=(t.wc||[]).length?((t.wc||[]).length+' רישומים'):'';
+}
+
+/* ───────── guided test — real timers ───────── */
+var KITS=[
+ {id:'strip',n:'מקלונים (רב-בדיקה)',d:'טבילה אחת, כמה חלונות קריאה. זמנים גנריים — בדוק מול ההוראות שלך.',
+  wins:[{k:'pH',o:15,c:60},{k:'כלור',o:15,c:60},{k:'GH',o:30,c:90},{k:'KH',o:30,c:90},{k:'ניטריט',o:60,c:120},{k:'ניטראט',o:60,c:120}]},
+ {id:'tube',n:'טיפות (ריאגנט נוזלי)',d:'שלבים ברצף עם המתנות. זמנים גנריים — ההוראות שלך קובעות.',
+  steps:[{t:'מלא את המבחנה עד הקו',d:0},{t:'הוסף את הטיפות לפי ההוראות',d:0},{t:'סגור ונער היטב',d:10},
+   {t:'המתן לפיתוח צבע',d:300,cr:1},{t:'השווה מול לוח הצבעים ורשום',d:0}]},
+];
+var tk=null,tst='pick',t0=0,tstep=0,tm={},traf=null;
+function fmtS(s){s=Math.max(0,Math.ceil(s));var m=Math.floor(s/60),r=s%60;return m>0?m+':'+(r<10?'0':'')+r:''+r;}
+function tsReset(){tst='pick';tk=null;if(traf){cancelAnimationFrame(traf);traf=null;}tsPick();}
+document.getElementById('ts-x').addEventListener('click',function(){
+  if(tst==='run'&&!confirm('לעצור את הבדיקה באמצע?'))return;
+  if(traf){cancelAnimationFrame(traf);traf=null;}tst='pick';shutAll();
+});
+function tsPick(){
+  document.getElementById('ts-sub').textContent='בחר את סוג הערכה שלך';
+  var h='<p style="margin:0 0 12px;font-size:.85rem;color:var(--ink2);line-height:1.6">'+
+    'הזמנים כאן <b>גנריים</b>. אם על הערכה שלך כתוב אחרת — ההוראות שלה קובעות. בסוף — רשום את התוצאות במסך המים.</p>';
+  KITS.forEach(function(k){h+='<button class="opt" data-kit="'+k.id+'"><span class="ot"><b>'+k.n+'</b><small>'+k.d+'</small></span></button>';});
+  document.getElementById('ts-body').innerHTML=h;
+  document.getElementById('ts-foot').innerHTML='<p class="note" style="margin:0;text-align:center">טיימר אמיתי — אפשר להשאיר את המסך פתוח בצד</p>';
+}
+function tsRun(){
+  var e=(performance.now()-t0)/1000,b=document.getElementById('ts-body'),f=document.getElementById('ts-foot');
+  if(tk.wins){
+    var nx=null;
+    tk.wins.forEach(function(w,i){if(tm[i])return;
+      if(e<w.o){if(!nx||w.o<nx.v)nx={v:w.o,k:w.k,m:'o'};}
+      else if(e<=w.c){if(!nx||(nx.m==='o'&&w.c<nx.v)||(nx.m==='c'&&w.c<nx.v))nx={v:w.c,k:w.k,m:'c'};}});
+    var big='✓',sub='כל החלונות טופלו — רשום את התוצאות',cl='';
+    if(nx){var lf=nx.v-e;big=fmtS(lf);
+      if(nx.m==='o'){sub='עוד רגע נפתח: '+nx.k;cl=lf<5?'u':'';}
+      else{sub=nx.k+' — החלון נסגר!';cl=lf<10?'l':'u';}}
+    var mx=tk.wins.reduce(function(a,w){return Math.max(a,w.c);},0);
+    var h='<div class="dial"><div class="t '+cl+'">'+big+'</div><div class="s">'+sub+'</div>'+
+      '<div class="ring"><i class="'+cl+'" style="width:'+Math.min(100,e/mx*100)+'%"></i></div></div>'+
+      '<div class="card" style="margin-top:12px;padding:0">';
+    tk.wins.forEach(function(w,i){
+      var st='',cc='',lb='';
+      if(tm[i]){st='dn';cc=tm[i]==='late'?'נקרא מאוחר — ביטחון מופחת':'נקרא';lb='✓';}
+      else if(e<w.o){cc='בעוד '+fmtS(w.o-e);lb='המתן';}
+      else if(e<=w.c){st=(w.c-e<10?'cl':'op');cc='נסגר בעוד '+fmtS(w.c-e);lb='קראתי';}
+      else{st='ms';cc='החלון נסגר';lb='קראתי מאוחר';}
+      h+='<div class="win '+st+'"><span class="p">'+w.k+'</span><span class="c">'+cc+'</span>'+
+        '<button class="b" data-rd="'+i+'"'+(st===''||st==='dn'?' disabled':'')+'>'+lb+'</button></div>';
+    });
+    b.innerHTML=h+'</div>';
+    f.innerHTML='<button class="cta" id="ts-done" style="margin:0">סיימתי — לרישום התוצאות</button>';
+  }else{
+    var s2=tk.steps[tstep],big2='●',sub2='פעולה ידנית — לחץ כשסיימת',cl2='',pc=0;
+    if(s2.d>0){var lf2=s2.d-e;big2=fmtS(lf2);pc=Math.min(100,e/s2.d*100);
+      if(lf2<=0){big2='0';sub2='אפשר להמשיך';cl2='';}else{sub2=s2.t;cl2=lf2<8?'u':'';}}
+    var h2='<div class="dial"><div class="t '+cl2+'">'+big2+'</div><div class="s">'+sub2+'</div>'+
+      '<div class="ring"><i class="'+cl2+'" style="width:'+pc+'%"></i></div></div>'+
+      '<div class="flag'+(s2.cr?' w':'')+'" style="margin-top:10px"><b>שלב '+(tstep+1)+' מתוך '+tk.steps.length+(s2.cr?' · שלב המתנה':'')+'</b><p>'+s2.t+'</p></div>';
+    b.innerHTML=h2;
+    var rdy=s2.d===0||e>=s2.d;
+    f.innerHTML='<button class="cta" id="ts-nx" style="margin:0"'+(rdy?'':' disabled')+'>'+
+      (tstep===tk.steps.length-1?'סיימתי — לרישום התוצאות':'הבא')+'</button>';
+  }
+}
+function tsLoop(){if(tst!=='run'){traf=null;return;}tsRun();traf=requestAnimationFrame(tsLoop);}
+document.getElementById('ts-body').addEventListener('click',function(e){
+  var k=e.target.closest('[data-kit]');
+  if(k){tk=KITS.filter(function(x){return x.id===k.getAttribute('data-kit');})[0];
+    document.getElementById('ts-sub').textContent=tk.n;
+    tst='run';t0=performance.now();tstep=0;tm={};if(!traf)traf=requestAnimationFrame(tsLoop);return;}
+  var r=e.target.closest('[data-rd]');
+  if(r&&!r.disabled){var i=+r.getAttribute('data-rd'),el=(performance.now()-t0)/1000;
+    tm[i]=el>tk.wins[i].c?'late':'ok';}
+});
+document.getElementById('ts-foot').addEventListener('click',function(e){
+  if(e.target.closest('#ts-nx')){
+    if(tstep<tk.steps.length-1){tstep++;t0=performance.now();}
+    else finishTest();
+  }
+  if(e.target.closest('#ts-done'))finishTest();
+});
+function finishTest(){
+  tst='done';if(traf){cancelAnimationFrame(traf);traf=null;}
+  shutAll();go('water');
+  var late=tk&&tk.wins&&Object.keys(tm).some(function(i){return tm[i]==='late';});
+  toast(late?'רשום את התוצאות — חלק נקרא מאוחר':'רשום עכשיו את התוצאות למטה');
+  var el=document.getElementById('t-nh3');if(el)el.focus();
+}
+
+/* ───────── dosing ───────── */
+function doseRender(){
+  var t=cur();
+  ['d-amt','d-per'].forEach(function(i){document.getElementById(i).value='';});
+  doseCalc();
+  var w=document.getElementById('d-warn');
+  if(!t){w.classList.add('hide');return;}
+  var n=netForDose(t);
+  if(!n.exact){
+    w.classList.remove('hide');
+    w.innerHTML='<b>אבנים ועץ טרם נשקלו</b><p>החישוב משתמש ב-'+fmt(n.val)+' ל׳ (הגבול העליון). מינון אמיתי עלול להיות נמוך יותר — עדיף לשקול את האבנים לפני תרופות רגישות.</p>';
+  }else w.classList.add('hide');
+}
+function doseCalc(){
+  var t=cur(),out=document.getElementById('d-out');
+  var amt=parseFloat(document.getElementById('d-amt').value),per=parseFloat(document.getElementById('d-per').value);
+  if(!t){out.innerHTML='<p style="margin:0;font-size:.8rem;color:var(--ink2)">צור אקווריום קודם.</p>';return;}
+  var n=netForDose(t),v=vol(t);
+  if(!amt||!per){out.innerHTML='<p style="margin:0;font-size:.8rem;color:var(--ink2)">הזן את שני המספרים מהתווית — והתוצאה תופיע כאן.</p>';return;}
+  var dose=amt*n.val/per, wrong=amt*v.gross/per;
+  var over=wrong>0?Math.round((wrong/dose-1)*100):0;
+  out.innerHTML='<div style="font-size:.74rem;color:var(--ink2)">המינון לאקווריום הזה'+(n.exact?'':' (לפי הגבול העליון)')+'</div>'+
+    '<div style="font-size:1.7rem;font-weight:500;font-variant-numeric:tabular-nums;margin-top:2px">'+(Math.round(dose*10)/10)+'</div>'+
+    '<div style="font-size:.73rem;color:var(--ink2);margin-top:5px">לפי '+fmt(n.val)+' ל׳ נטו · חישוב לפי הגולמי ('+fmt(v.gross)+' ל׳) היה נותן '+
+    (Math.round(wrong*10)/10)+' — עודף של כ-'+over+'%</div>';
+}
+['d-amt','d-per'].forEach(function(i){document.getElementById(i).addEventListener('input',doseCalc);});
+
+/* ───────── pre-action check ───────── */
+function ckRender(){
+  var t=cur(),b=document.getElementById('ck-body');
+  if(!t){b.innerHTML='<p class="note">צור אקווריום קודם.</p>';return;}
+  var v=vol(t),n=netForDose(t);
+  var lastWC=t.wc&&t.wc.length?t.wc[0].pct:null;
+  var acts=[
+   {t:'לנקות או להחליף את כל המדיה בסינון',v:'c',vt:'אל תעשה את זה',
+    p:'כל המושבה החיידקית שמפרקת אמוניה יושבת שם. החלפה מלאה מוחקת אותה בבת אחת והמיכל חוזר למחזור. נקה שליש בכל פעם, במי אקווריום, שבועיים בין חלק לחלק. הכלל הזה מבני — נכון לכל אקווריום.'},
+   {t:'החלפת מים גדולה (מעל 50%)',v:'w',vt:'מותר, בזהירות',
+    p:(lastWC?('אתה רגיל ל-'+lastWC+'% — '):'')+'קפיצה גדולה משנה טמפרטורה, קשיות ו-pH בבת אחת, והדגים מגיבים לשינוי עצמו. השווה טמפרטורה לפני ההכנסה, ומנטרל כלור לפי '+netLabel(t)+' — לא לפי הקרטון.'},
+   {t:'להוסיף תרופה',v:'w',vt:'קודם — נפח מדויק',
+    p:n.exact?('הנפח שלך מדוד ('+fmt(n.val)+' ל׳) — חשב במחשבון המינון ולפי הוראות היצרן בלבד.')
+             :('הנפח עדיין ״עד '+fmt(n.val)+' ל׳״ כי אבנים ועץ לא נשקלו. מינון תרופה לפי מספר עודף הוא הסיכון הקלאסי — שקול קודם, ואז חשב במחשבון.')},
+   {t:'להוסיף דגים חדשים',v:'w',vt:'לאט ובמדורג',
+    p:'2–3 בכל פעם, שבועיים בין תוספות, ובדיקת אמוניה לפני כל אחת. התאמת מינים ספציפית (טורף/נטרף, טמפרטורה) תגיע כשנטען ערכי טיפול פר-מין — עד אז לא ננחש.'},
+   {t:'להעלות טמפרטורה',v:'w',vt:'בהדרגה, עם אוורור',
+    p:'חמצן מומס יורד כשהטמפרטורה עולה. עלה לאט והוסף אוורור. יעדי טמפרטורה פר-מין יגיעו עם ערכי הטיפול — מה שלא אומת לא יוצג כבטוח.'}
+  ];
+  var h='';
+  acts.forEach(function(a){
+    h+='<div class="flag '+a.v+'"><b>'+a.t+' — '+a.vt+'</b><p>'+a.p+'</p></div>';
+  });
+  b.innerHTML=h+'<p class="note">אלה כללים מבניים וכלליים. פסקי התאמה פר-מין — בשלב הבא של האפליקציה, ורק על נתונים מאומתים.</p>';
+}
+
+/* ───────── loss ───────── */
+function lsRender(){
+  var t=cur(),b=document.getElementById('ls-body');
+  if(!t||!(t.fish||[]).length){b.innerHTML='<p class="note">אין דגים רשומים באקווריום הזה.</p>';return;}
+  var h='<p style="margin:0 0 10px;font-size:.85rem;color:var(--ink2)">מי?</p>';
+  t.fish.forEach(function(f){
+    h+='<button class="opt" data-ls="'+f.id+'"><span class="ot"><b>'+f.n+'</b><small>'+(f.c!=null?f.c+' כרגע':'')+'</small></span></button>';
+  });
+  b.innerHTML=h;
+}
+document.getElementById('ls-body').addEventListener('click',function(e){
+  var btn=e.target.closest('[data-ls]');if(!btn)return;
+  var t=cur(),f=t.fish.filter(function(x){return String(x.id)===btn.getAttribute('data-ls');})[0];
+  if(!f)return;
+  if(f.c!=null&&f.c>0)f.c--;
+  t.losses=t.losses||[];t.losses.unshift({date:new Date().toISOString().slice(0,10),n:f.n});
+  save();shutAll();renderFish();renderHome();
+  document.getElementById('ls-body').innerHTML='';
+  toast('נרשם. מצטער על ה'+f.n+'. 🫧');
+});
+
+/* ───────── tanks list (more) ───────── */
+function renderTanks(){
+  var h=document.getElementById('tanklist');h.innerHTML='';
+  if(!DB.tanks.length){h.innerHTML='<p class="note" style="margin:12px 0">עוד אין אקווריומים.</p>';return;}
+  DB.tanks.forEach(function(t,i){
+    var d=document.createElement('div');d.className='rw';
+    d.innerHTML='<span class="l">'+t.name+'<small>'+netLabel(t)+' · '+((t.fish||[]).length)+' סוגי דגים</small></span>'+
+      '<span style="display:flex;gap:6px">'+
+      '<button class="ghost" style="margin:0;width:auto;padding:7px 12px;font-size:.75rem" data-tsel="'+i+'">בחר</button>'+
+      '<button class="ghost danger" style="margin:0;width:auto;padding:7px 12px;font-size:.75rem" data-tdel="'+i+'">מחק</button></span>';
+    h.appendChild(d);
+  });
+}
+document.getElementById('tanklist').addEventListener('click',function(e){
+  var s=e.target.closest('[data-tsel]');
+  if(s){DB.cur=+s.getAttribute('data-tsel');save();renderAll();go('home');return;}
+  var d=e.target.closest('[data-tdel]');
+  if(d){var i=+d.getAttribute('data-tdel');
+    if(!confirm('למחוק את "'+DB.tanks[i].name+'" על כל הנתונים שלו? אין שחזור (חוץ מגיבוי).'))return;
+    try{localStorage.removeItem(PKEY+DB.tanks[i].id);}catch(err){}
+    DB.tanks.splice(i,1);DB.cur=Math.max(0,Math.min(DB.cur,DB.tanks.length-1));
+    save();renderAll();}
+});
+
+/* ───────── backup ───────── */
+document.getElementById('bk-copy').addEventListener('click',function(){
+  var payload=JSON.stringify({aquacare_backup:1,saved:new Date().toISOString(),data:DB});
+  function done(ok){toast(ok?'הגיבוי הועתק ✓':'העתקה נחסמה — סמן והעתק ידנית');}
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(payload).then(function(){done(true);},fb);
+  else fb();
+  function fb(){var ta=document.getElementById('bk-in');ta.value=payload;ta.select();
+    try{done(document.execCommand('copy'));}catch(e){done(false);}}
+});
+document.getElementById('bk-load').addEventListener('click',function(){
+  var raw=document.getElementById('bk-in').value.trim();
+  if(!raw){toast('אין טקסט');return;}
+  var o;try{o=JSON.parse(raw);}catch(e){toast('לא גיבוי תקין');return;}
+  var d=null;
+  if(o&&o.aquacare_backup===1&&o.data&&o.data.tanks)d=o.data;
+  else if(o&&o.riverium_backup===1&&o.data&&o.data.tank){
+    var x=o.data;d={v:1,cur:0,tanks:[{id:Date.now(),name:x.tank.name||'האקווריום שלי',
+      L:x.tank.L,W:x.tank.W,H:x.tank.H,waterline:x.tank.waterline,substrate:x.tank.substrate,decorL:x.tank.decorL,
+      fish:x.fish||[],wc:x.wc||[],tests:x.tests||[],losses:[],targets:null}]};}
+  if(!d){toast('לא גיבוי של AquaCare');return;}
+  if(!confirm('לשחזר? הנתונים הנוכחיים יוחלפו.'))return;
+  DB=d;save();document.getElementById('bk-in').value='';renderAll();toast('שוחזר ✓');
+});
+
+/* ───────── nav / init ───────── */
+var pages={home:'p-home',fish:'p-fish',water:'p-water',more:'p-more'};
+function go(p){
+  for(var k in pages)document.getElementById(pages[k]).classList.toggle('hide',k!==p);
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.toggle('on',t.getAttribute('data-p')===p);});
+  document.getElementById('main').scrollTo(0,0);
+}
+document.querySelector('.tabs').addEventListener('click',function(e){
+  var b=e.target.closest('.tab');if(b)go(b.getAttribute('data-p'));
+});
+var tt=null;
+function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
+  clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2000);}
+function renderAll(){renderSel();renderHome();renderFish();if(cur())renderWater();renderTanks();}
+renderAll();
+if(!DB.tanks.length)go('home');
+
+if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(e){}}
+})();
+</script>
+</body>
+</html>
