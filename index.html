@@ -242,6 +242,12 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
 
   <!-- HOME -->
   <div id="p-home">
+    <div id="home-empty" class="hide">
+      <div class="empty"><div class="em">🐠</div><h3>ברוך הבא ל-AquaCare</h3>
+        <p>נתחיל מהאקווריום שלך: מידות, קו מים, מצע — ומכאן הכול מחושב אמיתי.</p>
+        <button class="cta" style="max-width:280px;margin:18px auto 0" data-open="sh-tank" data-newtank="1">צור את האקווריום הראשון</button></div>
+    </div>
+    <div id="home-real">
     <div class="hero" id="hero">
       <img class="ph" id="hero-img" alt="">
       <div class="ov"></div>
@@ -269,6 +275,7 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
       <button class="act" id="a-wc"><span class="ai">💧</span><b>רשום החלפת מים</b><small id="a-wc-s">25% כרגיל?</small></button>
     </div>
     <p class="note">הנתונים נשמרים על המכשיר הזה בלבד ואינם נשלחים לשום מקום.</p>
+    </div>
   </div>
 
   <!-- FISH -->
@@ -515,13 +522,9 @@ document.getElementById('tanksel').addEventListener('change',function(e){
 /* ───────── home ───────── */
 function renderHome(){
   var t=cur();
-  if(!t){
-    document.getElementById('p-home').innerHTML=
-      '<div class="empty"><div class="em">🐠</div><h3>ברוך הבא ל-AquaCare</h3>'+
-      '<p>נתחיל מהאקווריום שלך: מידות, קו מים, מצע — ומכאן הכול מחושב אמיתי.</p>'+
-      '<button class="cta" style="max-width:280px;margin:18px auto 0" data-open="sh-tank" data-newtank="1">צור את האקווריום הראשון</button></div>';
-    return;
-  }
+  document.getElementById('home-empty').classList.toggle('hide',!!t);
+  document.getElementById('home-real').classList.toggle('hide',!t);
+  if(!t)return;
   document.getElementById('h-name').textContent=t.name;
   var dims=t.L+' × '+t.W+' × '+t.H+' ס״מ';
   document.getElementById('h-dims').innerHTML='<bdi style="direction:ltr;unicode-bidi:isolate">'+t.L+' × '+t.W+' × '+t.H+'</bdi> ס״מ';
