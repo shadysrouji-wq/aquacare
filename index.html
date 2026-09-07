@@ -865,12 +865,12 @@ var KITS=[
   steps:[{t:'מלא את המבחנה עד הקו',d:0},{t:'הוסף את הטיפות לפי ההוראות',d:0},{t:'סגור ונער היטב',d:10},
    {t:'המתן לפיתוח צבע',d:300,cr:1},{t:'השווה מול לוח הצבעים ורשום',d:0}]},
 ];
-var tk=null,tst='pick',t0=0,tstep=0,tm={},traf=null;
+var tk=null,tst='pick',t0=0,tstep=0,tm={},tint=null;
 function fmtS(s){s=Math.max(0,Math.ceil(s));var m=Math.floor(s/60),r=s%60;return m>0?m+':'+(r<10?'0':'')+r:''+r;}
-function tsReset(){tst='pick';tk=null;if(traf){cancelAnimationFrame(traf);traf=null;}tsPick();}
+function tsReset(){tst='pick';tk=null;if(tint){clearInterval(tint);tint=null;}tsPick();}
 document.getElementById('ts-x').addEventListener('click',function(){
   if(tst==='run'&&!confirm('לעצור את הבדיקה באמצע?'))return;
-  if(traf){cancelAnimationFrame(traf);traf=null;}tst='pick';shutAll();
+  if(tint){clearInterval(tint);tint=null;}tst='pick';shutAll();
 });
 function tsPick(){
   document.getElementById('ts-sub').textContent='בחר את סוג הערכה שלך';
@@ -919,12 +919,12 @@ function tsRun(){
       (tstep===tk.steps.length-1?'סיימתי — לרישום התוצאות':'הבא')+'</button>';
   }
 }
-function tsLoop(){if(tst!=='run'){traf=null;return;}tsRun();traf=requestAnimationFrame(tsLoop);}
+function tsTick(){if(tst!=='run'){clearInterval(tint);tint=null;return;}tsRun();}
 document.getElementById('ts-body').addEventListener('click',function(e){
   var k=e.target.closest('[data-kit]');
   if(k){tk=KITS.filter(function(x){return x.id===k.getAttribute('data-kit');})[0];
     document.getElementById('ts-sub').textContent=tk.n;
-    tst='run';t0=performance.now();tstep=0;tm={};if(!traf)traf=requestAnimationFrame(tsLoop);return;}
+    tst='run';t0=performance.now();tstep=0;tm={};tsRun();if(!tint)tint=setInterval(tsTick,400);return;}
   var r=e.target.closest('[data-rd]');
   if(r&&!r.disabled){var i=+r.getAttribute('data-rd'),el=(performance.now()-t0)/1000;
     tm[i]=el>tk.wins[i].c?'late':'ok';}
@@ -937,7 +937,7 @@ document.getElementById('ts-foot').addEventListener('click',function(e){
   if(e.target.closest('#ts-done'))finishTest();
 });
 function finishTest(){
-  tst='done';if(traf){cancelAnimationFrame(traf);traf=null;}
+  tst='done';if(tint){clearInterval(tint);tint=null;}
   shutAll();go('water');
   var late=tk&&tk.wins&&Object.keys(tm).some(function(i){return tm[i]==='late';});
   toast(late?'רשום את התוצאות — חלק נקרא מאוחר':'רשום עכשיו את התוצאות למטה');
