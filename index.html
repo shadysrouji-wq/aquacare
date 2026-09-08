@@ -365,6 +365,10 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
       </div>
       <div class="row2">
         <div class="field"><label>ברזל <span dir="ltr">Fe</span></label><input id="t-fe" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>אשלגן <span dir="ltr">K</span></label><input id="t-k" type="number" step="0.5" inputmode="decimal" placeholder="—"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>חומציות <span dir="ltr">pH</span></label><input id="t-ph" type="number" step="0.1" inputmode="decimal" placeholder="—"></div>
         <div class="field"><label>תאריך</label><input id="t-date" type="date"></div>
       </div>
       <button class="cta" id="t-save" style="margin-top:2px">שמור בדיקה</button>
@@ -610,7 +614,9 @@ var DEF_TARGETS=[
   {k:'po4',he:'פוספאט', sym:'PO₄', min:0.1,max:1.2},
   {k:'gh', he:'קושי כללי', sym:'GH', unit:'°d', min:null, max:null},
   {k:'kh', he:'קושי קרבונטי', sym:'KH', unit:'°d', min:null, max:null},
-  {k:'fe', he:'ברזל', sym:'Fe', min:null, max:null}
+  {k:'fe', he:'ברזל', sym:'Fe', min:null, max:null},
+  {k:'k',  he:'אשלגן', sym:'K', min:null, max:null},
+  {k:'ph', he:'חומציות', sym:'pH', min:null, max:null}
 ];
 var PARAM_KEYS=DEF_TARGETS.map(function(x){return x.k;});
 function targets(t){return (t&&t.targets)||DEF_TARGETS;}
