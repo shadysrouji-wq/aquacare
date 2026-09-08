@@ -605,18 +605,17 @@ var DB=loadDB();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast('שמירה נכשלה — אין מקום');}}
 function cur(){return DB.tanks[DB.cur]||null;}
 
-/* owner expert defaults — recorded 28.8.2026, editable per tank.
-   gh/kh/fe: אין עדיין ערכי מומחה — נרשמים ומוצגים בגרף, בלי פסיקה (min/max null) */
+/* owner expert defaults — nh3/no2/no3/po4 recorded 28.8.2026; gh/kh/fe/k/ph recorded 9.9.2026. Editable per tank. */
 var DEF_TARGETS=[
   {k:'nh3',he:'אמוניה', sym:'NH₃', min:0,  max:0.05},
   {k:'no2',he:'ניטריט', sym:'NO₂', min:0,  max:0.05},
   {k:'no3',he:'ניטראט', sym:'NO₃', min:1,  max:30},
   {k:'po4',he:'פוספאט', sym:'PO₄', min:0.1,max:1.2},
-  {k:'gh', he:'קושי כללי', sym:'GH', unit:'°d', min:null, max:null},
-  {k:'kh', he:'קושי קרבונטי', sym:'KH', unit:'°d', min:null, max:null},
-  {k:'fe', he:'ברזל', sym:'Fe', min:null, max:null},
-  {k:'k',  he:'אשלגן', sym:'K', min:null, max:null},
-  {k:'ph', he:'חומציות', sym:'pH', min:null, max:null}
+  {k:'gh', he:'קושי כללי', sym:'GH', unit:'°d', min:4,  max:12},
+  {k:'kh', he:'קושי קרבונטי', sym:'KH', unit:'°d', min:3,  max:8},
+  {k:'fe', he:'ברזל', sym:'Fe', min:0,  max:0.5},
+  {k:'k',  he:'אשלגן', sym:'K', min:5,  max:20},
+  {k:'ph', he:'חומציות', sym:'pH', min:6.5,max:7.8}
 ];
 var PARAM_KEYS=DEF_TARGETS.map(function(x){return x.k;});
 function targets(t){return (t&&t.targets)||DEF_TARGETS;}
@@ -940,7 +939,7 @@ function renderWater(){
     d.innerHTML='<span class="l">'+nm+'</span><span class="v">'+val+'</span>';
     tl.appendChild(d);
   });
-  document.getElementById('tg-src').textContent=t.targets?'מותאם אישית':'ערכי מומחה · 28.8.2026';
+  document.getElementById('tg-src').textContent=t.targets?'מותאם אישית':'ערכי מומחה · 28.8 + 9.9.2026';
   document.getElementById('tg-note').textContent='מעל המקסימום = אזור סטרס (פגיעה חיסונית מצטברת, תלוי ברגישות המין). מתחת למינימום = הערה בלבד.';
 
   renderCharts();renderTests();renderWC();
