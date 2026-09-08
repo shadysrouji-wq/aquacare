@@ -479,6 +479,12 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
     <div class="ti"><b>הוספת דג</b><small>חיפוש ב-25,425 מינים — עברית, מדעי או שם נפוץ</small></div></div>
   <div class="sh-b">
     <div class="field"><label>חיפוש</label><input id="f-q" type="text" placeholder="דיסקוס / Corydoras / guppy…" autocomplete="off"></div>
+    <div id="f-ai" class="hide">
+      <button class="ghost" id="f-ai-btn">זיהוי מתמונה — צלם או העלה</button>
+      <input type="file" id="f-ai-file" accept="image/*" capture="environment" style="display:none">
+      <div class="res hide" id="f-ai-res"></div>
+      <p class="note" style="margin:6px 0 0">התמונה נשלחת לשרת הזיהוי לצורך הזיהוי בלבד ואינה נשמרת. ההצעות הן הצעות — אתה מאשר.</p>
+    </div>
     <div class="res hide" id="f-res"></div>
     <div id="f-pick" class="hide">
       <div class="card"><b id="f-pn" style="font-size:.95rem;font-weight:500"></b>
@@ -826,7 +832,55 @@ function fOpen(){
   document.getElementById('f-res').classList.add('hide');
   document.getElementById('f-pick').classList.add('hide');
   document.getElementById('f-add').disabled=true;
+  document.getElementById('f-ai').classList.toggle('hide',!AICFG);
+  document.getElementById('f-ai-res').classList.add('hide');
   ensureIndex(function(){});
+}
+
+/* ───────── AI identify (§279) — active only when the published catalog carries an endpoint ───────── */
+document.getElementById('f-ai-btn').addEventListener('click',function(){document.getElementById('f-ai-file').click();});
+document.getElementById('f-ai-file').addEventListener('change',function(e){
+  var f=e.target.files&&e.target.files[0];if(!f)return;
+  var img=new Image(),url=URL.createObjectURL(f);
+  img.onload=function(){
+    var max=900,sc=Math.min(1,max/Math.max(img.width,img.height));
+    var c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+    aiIdentify(c.toDataURL('image/jpeg',.82).split(',')[1]);e.target.value='';
+  };
+  img.onerror=function(){URL.revokeObjectURL(url);toast('קריאת התמונה נכשלה');};
+  img.src=url;
+});
+function aiIdentify(b64){
+  var box=document.getElementById('f-ai-res');
+  box.classList.remove('hide');box.innerHTML='<p class="note" style="margin:8px 0">מזהה…</p>';
+  fetch(AICFG,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({image:b64,media:'image/jpeg'})})
+  .then(function(r){return r.json();})
+  .then(function(j){
+    if(j&&j.error){box.innerHTML='<p class="note" style="margin:8px 0">'+(j.error==='cap'?'מכסת הזיהויים היומית נוצלה — נסה מחר, או חפש בשם.':'הזיהוי נכשל — חפש בשם.')+'</p>';return;}
+    var cands=(j&&j.candidates)||[];
+    if(!cands.length){box.innerHTML='<p class="note" style="margin:8px 0">לא זוהה בביטחון מספיק — עדיף לחפש בשם מאשר לנחש.</p>';return;}
+    box.innerHTML='';
+    cands.forEach(function(cd){
+      if(!cd.scientific&&!cd.english&&!cd.hebrew)return;
+      var conf=cd.confidence==='high'?'ביטחון גבוה':cd.confidence==='medium'?'ביטחון בינוני':'ביטחון נמוך';
+      var b=document.createElement('button');b.className='opt';
+      b.innerHTML='<span class="ot"><b></b><small><i></i> · '+conf+'</small></span>';
+      b.querySelector('b').textContent=cd.hebrew||cd.english||cd.scientific;
+      b.querySelector('i').textContent=cd.scientific||'';
+      b.addEventListener('click',function(){
+        var q=document.getElementById('f-q');
+        q.value=cd.scientific||cd.english||cd.hebrew;
+        q.dispatchEvent(new Event('input'));
+        box.classList.add('hide');
+      });
+      box.appendChild(b);
+    });
+    var n=document.createElement('p');n.className='note';n.style.margin='6px 0 0';
+    n.textContent='אלה הצעות בלבד — בחר רק אם זה באמת הדג, ואז אשר מהקטלוג.';
+    box.appendChild(n);
+  })
+  .catch(function(){box.innerHTML='<p class="note" style="margin:8px 0">שגיאת רשת — נסה שוב.</p>';});
 }
 document.getElementById('f-q').addEventListener('input',function(){
   var q=norm(this.value);
@@ -1249,11 +1303,13 @@ function toast(m){var t=document.getElementById('toast');t.textContent=m;t.class
   clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2000);}
 /* ── the owner's own shop: categories, products, WhatsApp ordering ── */
 var CATALOG={wa:'',cats:[],products:[]}, CATKEY='aquacare-catalog-draft';
+var AICFG=''; /* endpoint הזיהוי — תמיד מה-catalog.json המפורסם, לעולם לא מטיוטה מקומית */
 function loadCatalog(){
   var draft=null;
   try{draft=JSON.parse(localStorage.getItem(CATKEY)||'null');}catch(e){}
   if(draft&&draft.cats){CATALOG=draft;renderShop();renderManager();}
   fetch('catalog.json').then(function(r){return r.json();}).then(function(j){
+    AICFG=(j&&typeof j.ai==='string'&&j.ai.indexOf('https://')===0)?j.ai:'';
     if(!draft||!draft.cats){CATALOG=j;renderShop();renderManager();}
   }).catch(function(){});
 }
