@@ -188,6 +188,21 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
 .tk .tn small{display:block;font-size:.72rem;color:var(--ink3);margin-top:1px}
 .tk .tb{font-family:inherit;font-size:.74rem;font-weight:500;padding:6px 13px;border-radius:9px;border:1px solid var(--line);
   background:var(--surf2);color:var(--ink);cursor:pointer}
+.chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;-webkit-overflow-scrolling:touch}
+.chip2{flex:none;font-family:inherit;font-size:.78rem;font-weight:500;padding:7px 14px;border-radius:99px;
+  border:1px solid var(--line);background:var(--surf);color:var(--ink2);cursor:pointer;white-space:nowrap}
+.chip2.on{background:linear-gradient(150deg,var(--sky),var(--sky-d));color:#fff;border-color:transparent}
+.prod{border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surf);margin-top:10px;box-shadow:var(--sh)}
+.prod .im{height:150px;background:var(--surf2);display:flex;align-items:center;justify-content:center;color:var(--ink3);position:relative}
+.prod .im img{width:100%;height:100%;object-fit:cover;display:block}
+.prod .im .oos{position:absolute;top:9px;right:10px;font-size:.66rem;font-weight:500;padding:4px 9px;border-radius:7px;background:rgba(255,255,255,.94);color:var(--crit)}
+.prod .in{padding:11px 13px 12px}
+.prod .in b{font-size:.92rem;font-weight:500;display:block}
+.prod .in .ds{font-size:.76rem;color:var(--ink2);margin-top:3px;line-height:1.5}
+.prod .pr{display:flex;justify-content:space-between;align-items:center;margin-top:9px}
+.prod .price{font-size:1.05rem;font-weight:500;font-variant-numeric:tabular-nums}
+.wabtn{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;margin-top:10px;padding:11px;border-radius:12px;border:none;
+  font-family:inherit;font-size:.86rem;font-weight:500;color:#fff;background:#1FAF57;cursor:pointer;text-decoration:none}
 .tab.on{color:var(--sky);font-weight:500}
 
 .sheet{position:fixed;inset:0;z-index:40;background:var(--bg);display:flex;flex-direction:column;
@@ -351,10 +366,10 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
 
   <!-- SHOP -->
   <div id="p-shop" class="hide">
-    <div class="hd">חנות Riverium <small>המחלקות האמיתיות</small></div>
-    <div class="card" style="padding:2px 4px" id="shopdepts"></div>
-    <div class="tip"><b>למה עדיין אין ״מתאים לאקווריום שלך״ על כל מוצר?</b>
-      <p>כי פסק כזה דורש ערכי טיפול מאומתים לכל מין — ואנחנו לא מנחשים. כשייכנסו, ההמלצה תחושב רק מהאקווריום שלך; מחיר, מלאי ומבצעים לא ישפיעו עליה. גם כשהחנות שלנו.</p></div>
+    <div class="hd">החנות <small id="shop-sum"></small></div>
+    <div class="chips" id="shop-chips"></div>
+    <div id="shop-list"></div>
+    <p class="note" id="shop-note"></p>
   </div>
 
   <!-- MORE -->
@@ -362,6 +377,28 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
     <div class="hd">האקווריומים שלי</div>
     <div class="card" style="padding:6px 16px" id="tanklist"></div>
     <button class="cta" data-open="sh-tank" data-newtank="1">+ אקווריום חדש</button>
+
+    <div class="hd">ניהול החנות שלי <small>מנהל בלבד</small></div>
+    <div class="card">
+      <div class="field"><label>מספר וואטסאפ להזמנות (בפורמט 9725XXXXXXXX)</label>
+        <input id="m-wa" type="tel" inputmode="numeric" placeholder="972501234567">
+        <div class="hint">כשמוגדר — כל מוצר מקבל כפתור ״הזמנה בוואטסאפ״ ישירות אליך.</div></div>
+      <div class="field"><label>מוצר חדש — קטגוריה</label><select id="m-cat"></select></div>
+      <div class="row2">
+        <div class="field"><label>שם המוצר</label><input id="m-name" type="text" placeholder="מסנן חיצוני 1200 ל׳/ש"></div>
+        <div class="field"><label>מחיר (₪)</label><input id="m-price" type="number" inputmode="decimal"></div>
+      </div>
+      <div class="field"><label>תיאור קצר</label><input id="m-desc" type="text" placeholder="שקט, מתאים עד 300 ליטר"></div>
+      <div class="row2">
+        <div class="field"><label>תמונה</label><input id="m-img" type="file" accept="image/*"></div>
+        <div class="field"><label>במלאי?</label><select id="m-stock"><option value="1">כן</option><option value="0">אזל</option></select></div>
+      </div>
+      <button class="cta" id="m-add" style="margin-top:2px">הוסף מוצר</button>
+      <button class="ghost" id="m-newcat">+ קטגוריה חדשה</button>
+      <button class="ghost" id="m-pub">📋 העתק קטלוג לפרסום</button>
+    </div>
+    <p class="note">העריכות נשמרות במכשיר הזה ומופיעות מיד בלשונית החנות שלך (תצוגה מקדימה). כדי שכל הלקוחות יראו — ״העתק קטלוג לפרסום״ ושלח לי; פרסום עצמאי מלא מגיע עם שלב השרת.</p>
+    <div class="card" style="margin-top:12px;padding:6px 16px" id="m-list"></div>
 
     <div class="hd">משימה קבועה חדשה <small>לאקווריום הנוכחי</small></div>
     <div class="card">
@@ -1168,26 +1205,126 @@ document.querySelector('.tabs').addEventListener('click',function(e){
 var tt=null;
 function toast(m){var t=document.getElementById('toast');t.textContent=m;t.classList.add('show');
   clearTimeout(tt);tt=setTimeout(function(){t.classList.remove('show');},2000);}
-/* ── shop: the real Riverium departments (§281) ── */
-var DEPTS=[
- ['כל המוצרים','כל-המוצרים','bag'],
- ['אקווריומים','אקווריומים','tank'],
- ['ציוד לאקווריומים','ציוד-לאקווריומים','gear'],
- ['עיצוב ומצע','עיצוב-ומצע-לאקווריום','gravel'],
- ['תכשירים','תכשירים-לאקווריום','beaker'],
- ['מזון לדגי נוי','מזון-לדגי-נוי-וחסרי-חוליות','food'],
- ['צמחי מים','צמחי-מים-לאקווריום','plant']
-];
+/* ── the owner's own shop: categories, products, WhatsApp ordering ── */
+var CATALOG={wa:'',cats:[],products:[]}, CATKEY='aquacare-catalog-draft';
+function loadCatalog(){
+  var draft=null;
+  try{draft=JSON.parse(localStorage.getItem(CATKEY)||'null');}catch(e){}
+  if(draft&&draft.cats){CATALOG=draft;renderShop();renderManager();}
+  fetch('catalog.json').then(function(r){return r.json();}).then(function(j){
+    if(!draft||!draft.cats){CATALOG=j;renderShop();renderManager();}
+  }).catch(function(){});
+}
+function saveCatalog(){try{localStorage.setItem(CATKEY,JSON.stringify(CATALOG));}catch(e){toast('אין מקום');}}
+var shopCat='all';
 function renderShop(){
-  var h=document.getElementById('shopdepts');h.innerHTML='';
-  DEPTS.forEach(function(d){
-    var a=document.createElement('a');a.className='dept';
-    a.href='https://riverium.co.il/collections/'+encodeURIComponent(d[1]);
-    a.target='_blank';a.rel='noopener';
-    a.innerHTML='<span style="display:flex;align-items:center;gap:10px;color:var(--sky-d)">'+icon(d[2])+'<b style="color:var(--ink)">'+d[0]+'</b></span>'+icon('out');
-    h.appendChild(a);
+  var ch=document.getElementById('shop-chips');ch.innerHTML='';
+  var all=document.createElement('button');all.className='chip2'+(shopCat==='all'?' on':'');
+  all.textContent='הכול';all.addEventListener('click',function(){shopCat='all';renderShop();});
+  ch.appendChild(all);
+  CATALOG.cats.forEach(function(c){
+    var b=document.createElement('button');b.className='chip2'+(shopCat===c.id?' on':'');
+    b.textContent=c.n;b.addEventListener('click',function(){shopCat=c.id;renderShop();});
+    ch.appendChild(b);
+  });
+  var list=document.getElementById('shop-list');list.innerHTML='';
+  var items=CATALOG.products.filter(function(p){return shopCat==='all'||p.cat===shopCat;});
+  if(!items.length){
+    list.innerHTML='<div class="empty"><div class="em" style="color:var(--sky-d);display:flex;justify-content:center">'+icon('bag','li')+'</div>'+
+      '<h3>עוד אין מוצרים כאן</h3><p>המנהל מוסיף מוצרים במסך ״עוד ← ניהול החנות שלי״ — והם מופיעים כאן מיד.</p></div>';
+  }
+  items.forEach(function(pr){
+    var d=document.createElement('div');d.className='prod';
+    var img=pr.img?'<img src="'+pr.img+'" alt="">':icon('bag','li');
+    var oos=pr.stock?'':'<span class="oos">אזל המלאי</span>';
+    var wa='';
+    if(CATALOG.wa&&pr.stock){
+      var msg=encodeURIComponent('שלום! אני מעוניין ב: '+pr.n+' ('+pr.price+' ₪) — דרך אפליקציית AquaCare');
+      wa='<a class="wabtn" target="_blank" rel="noopener" href="https://wa.me/'+CATALOG.wa+'?text='+msg+'">'+icon('out')+' הזמנה בוואטסאפ</a>';
+    }
+    d.innerHTML='<div class="im">'+img+oos+'</div><div class="in"><b></b>'+
+      '<div class="ds"></div><div class="pr"><span class="price">'+pr.price+' ₪</span></div>'+wa+'</div>';
+    d.querySelector('.in b').textContent=pr.n;
+    d.querySelector('.ds').textContent=pr.desc||'';
+    list.appendChild(d);
+  });
+  document.getElementById('shop-sum').textContent=CATALOG.products.length?CATALOG.products.length+' מוצרים':'';
+  document.getElementById('shop-note').textContent=CATALOG.wa?
+    'הזמנה נפתחת בוואטסאפ ישירות מול החנות. תשלום ואיסוף — מתואמים שם.':
+    'המנהל טרם הגדיר מספר וואטסאפ להזמנות (במסך עוד).';
+}
+/* manager */
+function renderManager(){
+  var sel=document.getElementById('m-cat');sel.innerHTML='';
+  CATALOG.cats.forEach(function(c){var o=document.createElement('option');o.value=c.id;o.textContent=c.n;sel.appendChild(o);});
+  document.getElementById('m-wa').value=CATALOG.wa||'';
+  var h=document.getElementById('m-list');h.innerHTML='';
+  if(!CATALOG.products.length){h.innerHTML='<p class="note" style="margin:10px 0">עוד אין מוצרים בקטלוג.</p>';}
+  CATALOG.products.forEach(function(pr){
+    var d=document.createElement('div');d.className='rw';
+    var cat=(CATALOG.cats.filter(function(c){return c.id===pr.cat;})[0]||{}).n||'';
+    d.innerHTML='<span class="l">'+pr.n+'<small>'+cat+' · '+pr.price+' ₪ · '+(pr.stock?'במלאי':'אזל')+'</small></span>'+
+      '<span style="display:flex;gap:6px">'+
+      '<button class="ghost" style="margin:0;width:auto;padding:7px 11px;font-size:.73rem" data-mst="'+pr.id+'">'+(pr.stock?'סמן אזל':'החזר למלאי')+'</button>'+
+      '<button class="ghost danger" style="margin:0;width:auto;padding:7px 11px;font-size:.73rem" data-mdel="'+pr.id+'">מחק</button></span>';
+    h.appendChild(d);
   });
 }
+document.getElementById('m-wa').addEventListener('change',function(){
+  var v=this.value.replace(/\D/g,'');
+  CATALOG.wa=v;saveCatalog();renderShop();
+  if(v&&!/^9725\d{8}$/.test(v))toast('בדוק את הפורמט: 9725XXXXXXXX');
+  else if(v)toast('נשמר ✓');
+});
+document.getElementById('m-add').addEventListener('click',function(){
+  var name=document.getElementById('m-name').value.trim();
+  var price=parseFloat(document.getElementById('m-price').value);
+  if(!name){toast('חסר שם מוצר');return;}
+  if(!price||price<=0||price>100000){toast('בדוק מחיר');return;}
+  var pr={id:Date.now(),cat:document.getElementById('m-cat').value,n:name,price:price,
+    desc:document.getElementById('m-desc').value.trim(),stock:document.getElementById('m-stock').value==='1',img:null};
+  var f=document.getElementById('m-img').files[0];
+  function fin(){
+    CATALOG.products.unshift(pr);saveCatalog();renderShop();renderManager();
+    ['m-name','m-price','m-desc'].forEach(function(i){document.getElementById(i).value='';});
+    document.getElementById('m-img').value='';
+    toast('המוצר נוסף — מופיע בחנות ✓');
+  }
+  if(f){
+    var img=new Image(),url=URL.createObjectURL(f);
+    img.onload=function(){
+      var sc=Math.min(1,640/Math.max(img.width,img.height));
+      var c=document.createElement('canvas');c.width=Math.round(img.width*sc);c.height=Math.round(img.height*sc);
+      c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(url);
+      pr.img=c.toDataURL('image/jpeg',.75);fin();
+    };
+    img.onerror=function(){URL.revokeObjectURL(url);fin();};
+    img.src=url;
+  }else fin();
+});
+document.getElementById('m-newcat').addEventListener('click',function(){
+  var name=(window.prompt?prompt('שם הקטגוריה החדשה:'):null);
+  if(name===null){toast('הוסף קטגוריה: כתוב את שמה בשדה שם המוצר ולחץ שוב');return;}
+  name=(name||'').trim();if(!name)return;
+  CATALOG.cats.push({id:'c'+Date.now(),n:name});
+  saveCatalog();renderShop();renderManager();toast('קטגוריה נוספה ✓');
+});
+document.getElementById('m-list').addEventListener('click',function(e){
+  var st=e.target.closest('[data-mst]');
+  if(st){var pr=CATALOG.products.filter(function(x){return String(x.id)===st.getAttribute('data-mst');})[0];
+    if(pr){pr.stock=!pr.stock;saveCatalog();renderShop();renderManager();}return;}
+  var dl=e.target.closest('[data-mdel]');
+  if(dl&&confirm('למחוק את המוצר?')){
+    CATALOG.products=CATALOG.products.filter(function(x){return String(x.id)!==dl.getAttribute('data-mdel');});
+    saveCatalog();renderShop();renderManager();}
+});
+document.getElementById('m-pub').addEventListener('click',function(){
+  var payload=JSON.stringify(CATALOG);
+  function done(ok){toast(ok?'הקטלוג הועתק — שלח לי לפרסום ✓':'העתקה נחסמה');}
+  if(navigator.clipboard&&navigator.clipboard.writeText)
+    navigator.clipboard.writeText(payload).then(function(){done(true);},function(){done(false);});
+  else done(false);
+});
 
 /* ── care schedule — the single-user seed of the operations department ── */
 function daysSince(dateStr){
@@ -1257,8 +1394,8 @@ function paintIcons(){
     el.insertAdjacentHTML('afterbegin',svg);
   });
 }
-function renderAll(){renderSel();renderHome();renderFish();if(cur())renderWater();renderTanks();renderShop();renderSked();paintIcons();}
-renderAll();
+function renderAll(){renderSel();renderHome();renderFish();if(cur())renderWater();renderTanks();renderSked();paintIcons();}
+renderAll();loadCatalog();
 if(!DB.tanks.length)go('home');
 
 if('serviceWorker' in navigator){try{navigator.serviceWorker.register('sw.js');}catch(e){}}
