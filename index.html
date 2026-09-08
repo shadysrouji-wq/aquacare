@@ -333,8 +333,12 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
       <div class="rw"><span class="l">מים בפועל<small>עד קו המים</small></span><span class="v" id="v-geo"></span></div>
       <div class="rw"><span class="l">המצע תופס</span><span class="v" id="v-sub"></span></div>
       <div class="rw"><span class="l">אבנים ועץ</span><span class="v" id="v-decor"></span></div>
+      <div class="rw"><span class="l">הזכוכית תופסת</span><span class="v" id="v-glass"></span></div>
       <div class="rw" style="background:var(--ok-f);margin:0 -16px -14px;padding:12px 16px;border-radius:0 0 15px 15px">
         <span class="l"><b style="font-weight:500">נטו לחישובים</b></span><span class="v" style="color:var(--ok)" id="v-net"></span></div>
+    </div>
+    <div class="card" style="margin-top:10px;padding:6px 16px">
+      <div class="rw"><span class="l">מקור המים<small>אוסמוזה / ברז</small></span><span class="v" id="v-src"></span></div>
     </div>
     <button class="ghost" data-open="sh-tank">עריכת מידות המיכל</button>
 
@@ -345,17 +349,24 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
     <div class="hd">מגמות <small id="ch-sum"></small></div>
     <div class="cells" id="charts"></div>
 
-    <div class="hd">רישום בדיקה ידני <small>mg/L · ריק = לא נבדק</small></div>
+    <div class="hd">רישום בדיקה ידני <small>mg/L · קושי ב-°d · ריק = לא נבדק</small></div>
     <div class="card">
       <div class="row2">
-        <div class="field"><label>אמוניה</label><input id="t-nh3" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
-        <div class="field"><label>ניטריט</label><input id="t-no2" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>אמוניה <span dir="ltr">NH₃</span></label><input id="t-nh3" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>ניטריט <span dir="ltr">NO₂</span></label><input id="t-no2" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
       </div>
       <div class="row2">
-        <div class="field"><label>ניטראט</label><input id="t-no3" type="number" step="1" inputmode="decimal" placeholder="—"></div>
-        <div class="field"><label>פוספאט</label><input id="t-po4" type="number" step="0.1" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>ניטראט <span dir="ltr">NO₃</span></label><input id="t-no3" type="number" step="1" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>פוספאט <span dir="ltr">PO₄</span></label><input id="t-po4" type="number" step="0.1" inputmode="decimal" placeholder="—"></div>
       </div>
-      <div class="field"><label>תאריך</label><input id="t-date" type="date"></div>
+      <div class="row2">
+        <div class="field"><label>קושי כללי <span dir="ltr">GH</span></label><input id="t-gh" type="number" step="0.5" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>קושי קרבונטי <span dir="ltr">KH</span></label><input id="t-kh" type="number" step="0.5" inputmode="decimal" placeholder="—"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>ברזל <span dir="ltr">Fe</span></label><input id="t-fe" type="number" step="0.01" inputmode="decimal" placeholder="—"></div>
+        <div class="field"><label>תאריך</label><input id="t-date" type="date"></div>
+      </div>
       <button class="cta" id="t-save" style="margin-top:2px">שמור בדיקה</button>
     </div>
     <div class="card" style="margin-top:12px;padding:6px 16px" id="t-list"></div>
@@ -451,6 +462,8 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
       <div class="hint">לא יודע? השאר ריק — נחשב בזהירות ונציג "עד". כשתשקול, תעדכן.</div></div>
     <div class="field"><label>עובי זכוכית (מ״מ)</label><input id="k-gl" type="number" inputmode="decimal" placeholder="ריק = לא ידוע">
       <div class="hint">מודדים אקווריום מבחוץ — הזכוכית עצמה מקטינה את נפח המים. נפוץ: עד ‎100 ל׳ — ‏5; עד ‎250 ל׳ — ‏6–8; גדול — ‏10–12. ריק = חישוב לפי מידות חוץ.</div></div>
+    <div class="field"><label>מי אוסמוזה (%)</label><input id="k-ro" type="number" inputmode="decimal" min="0" max="100" placeholder="ריק = לא הוגדר">
+      <div class="hint">ממה מורכבים המים: ‏0 = ברז בלבד · ‏100 = אוסמוזה בלבד · ‏50 = חצי-חצי.</div></div>
     <div class="card" id="k-calc" style="background:var(--sky-f);border-color:rgba(75,174,220,.3)"></div>
   </div>
   <div class="sh-f"><div><button class="cta" id="k-save">שמור אקווריום</button></div></div>
@@ -588,14 +601,20 @@ var DB=loadDB();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB));}catch(e){toast('שמירה נכשלה — אין מקום');}}
 function cur(){return DB.tanks[DB.cur]||null;}
 
-/* owner expert defaults — recorded 28.8.2026, editable per tank */
+/* owner expert defaults — recorded 28.8.2026, editable per tank.
+   gh/kh/fe: אין עדיין ערכי מומחה — נרשמים ומוצגים בגרף, בלי פסיקה (min/max null) */
 var DEF_TARGETS=[
-  {k:'nh3',he:'אמוניה', min:0,  max:0.05},
-  {k:'no2',he:'ניטריט', min:0,  max:0.05},
-  {k:'no3',he:'ניטראט', min:1,  max:30},
-  {k:'po4',he:'פוספאט', min:0.1,max:1.2}
+  {k:'nh3',he:'אמוניה', sym:'NH₃', min:0,  max:0.05},
+  {k:'no2',he:'ניטריט', sym:'NO₂', min:0,  max:0.05},
+  {k:'no3',he:'ניטראט', sym:'NO₃', min:1,  max:30},
+  {k:'po4',he:'פוספאט', sym:'PO₄', min:0.1,max:1.2},
+  {k:'gh', he:'קושי כללי', sym:'GH', unit:'°d', min:null, max:null},
+  {k:'kh', he:'קושי קרבונטי', sym:'KH', unit:'°d', min:null, max:null},
+  {k:'fe', he:'ברזל', sym:'Fe', min:null, max:null}
 ];
+var PARAM_KEYS=DEF_TARGETS.map(function(x){return x.k;});
 function targets(t){return (t&&t.targets)||DEF_TARGETS;}
+function hasTarget(tg){return tg&&tg.min!=null&&tg.max!=null;}
 
 /* ───────── volume (§17): unknown is unknown, never zero ───────── */
 function vol(t){
@@ -620,6 +639,7 @@ function netForDose(t){var v=vol(t);return {val:v.net==null?v.before:v.net, exac
 function judge(t,k,v){
   var tg=targets(t).filter(function(x){return x.k===k;})[0];
   if(!tg||v==null||isNaN(v))return null;
+  if(!hasTarget(tg))return {cls:'',txt:'נרשם — אין יעד מוגדר'};
   if(v>tg.max)return {cls:'w',txt:'מעל — סטרס'};
   if(v<tg.min)return {cls:'',txt:'מתחת לטווח'};
   return {cls:'g',txt:'בטווח'};
@@ -750,9 +770,9 @@ document.getElementById('cam-file').addEventListener('change',function(e){
 var editingNew=false;
 function openTank(isNew){
   editingNew=!!isNew||!cur();
-  var t=editingNew?{name:'',L:'',W:'',H:'',waterline:'',substrate:'',decorL:'',glass:''}:cur();
+  var t=editingNew?{name:'',L:'',W:'',H:'',waterline:'',substrate:'',decorL:'',glass:'',roPct:''}:cur();
   document.getElementById('tk-title').textContent=editingNew?'אקווריום חדש':'עריכת '+t.name;
-  [['k-name','name'],['k-l','L'],['k-w','W'],['k-h','H'],['k-wl','waterline'],['k-sb','substrate'],['k-dc','decorL'],['k-gl','glass']]
+  [['k-name','name'],['k-l','L'],['k-w','W'],['k-h','H'],['k-wl','waterline'],['k-sb','substrate'],['k-dc','decorL'],['k-gl','glass'],['k-ro','roPct']]
     .forEach(function(p){var el=document.getElementById(p[0]);el.value=(t[p[1]]==null?'':t[p[1]]);});
   kCalc();
 }
@@ -775,10 +795,11 @@ document.getElementById('k-save').addEventListener('click',function(){
   var L=kv('k-l'),W=kv('k-w'),H=kv('k-h');
   if(!name){toast('חסר שם');return;}
   if(!L||!W||!H||L<5||W<5||H<5||L>1000){toast('בדוק מידות');return;}
-  var data={name:name,L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc'),glass:kv('k-gl')};
+  var data={name:name,L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc'),glass:kv('k-gl'),roPct:kv('k-ro')};
+  if(data.roPct!=null&&(data.roPct<0||data.roPct>100)){toast('אחוז אוסמוזה בין 0 ל-100');return;}
   if(editingNew){
     var id=Date.now();
-    DB.tanks.push({id:id,name:name,L:L,W:W,H:H,waterline:data.waterline,substrate:data.substrate,decorL:data.decorL,glass:data.glass,
+    DB.tanks.push({id:id,name:name,L:L,W:W,H:H,waterline:data.waterline,substrate:data.substrate,decorL:data.decorL,glass:data.glass,roPct:data.roPct,
       fish:[],wc:[],tests:[],losses:[],targets:null});
     DB.cur=DB.tanks.length-1;
   }else{Object.assign(cur(),data);}
@@ -897,12 +918,20 @@ function renderWater(){
   var dEl=document.getElementById('v-decor');
   if(t.decorL==null){dEl.textContent='לא ידוע';dEl.className='v na';}
   else{dEl.textContent='−'+fmt(t.decorL)+' ל׳';dEl.className='v';}
+  var gEl=document.getElementById('v-glass');
+  if(t.glass==null){gEl.textContent='עובי לא הוזן';gEl.className='v na';}
+  else{gEl.textContent='−'+fmt(v.glassCut)+' ל׳ ('+t.glass+' מ״מ)';gEl.className='v';}
+  var sEl=document.getElementById('v-src');
+  sEl.textContent=(t.roPct==null)?'לא הוגדר — לחץ ״עריכת מידות״'
+    :(t.roPct===0?'מי ברז בלבד':(t.roPct===100?'אוסמוזה בלבד':t.roPct+'% אוסמוזה · '+(100-t.roPct)+'% ברז'));
   document.getElementById('v-net').textContent=netLabel(t);
 
   var tl=document.getElementById('tg-list');tl.innerHTML='';
   targets(t).forEach(function(x){
     var d=document.createElement('div');d.className='rw';
-    d.innerHTML='<span class="l">'+x.he+'</span><span class="v">'+x.min+' – '+x.max+'</span>';
+    var nm=x.he+(x.sym?' <small dir="ltr">'+x.sym+'</small>':'');
+    var val=hasTarget(x)?(x.min+' – '+x.max):'<span style="color:var(--ink3)">נרשם בלבד — טרם הוגדר יעד</span>';
+    d.innerHTML='<span class="l">'+nm+'</span><span class="v">'+val+'</span>';
     tl.appendChild(d);
   });
   document.getElementById('tg-src').textContent=t.targets?'מותאם אישית':'ערכי מומחה · 28.8.2026';
@@ -918,20 +947,20 @@ function renderCharts(){
     var pts=tests.map(function(ts){return ts[tg.k];}).filter(function(v){return v!=null;});
     if(pts.length<2)return;
     any=true;
-    var lo=Math.min.apply(null,pts.concat([tg.min])),hi=Math.max.apply(null,pts.concat([tg.max]));
+    var ht=hasTarget(tg);
+    var lo=Math.min.apply(null,ht?pts.concat([tg.min]):pts),hi=Math.max.apply(null,ht?pts.concat([tg.max]):pts);
     if(hi-lo<0.0001)hi=lo+1;
     var W=150,H=46,P=4;
     function X(i){return P+(W-2*P)*i/(pts.length-1);}
     function Y(v){return P+(H-2*P)*(1-(v-lo)/(hi-lo));}
     var line=pts.map(function(v,i){return X(i).toFixed(1)+','+Y(v).toFixed(1);}).join(' ');
     var last=pts[pts.length-1],j=judge(t,tg.k,last);
-    var col=j&&j.cls==='w'?'var(--warn)':'var(--ok)';
-    var bandTop=Y(Math.min(tg.max,hi)),bandBot=Y(Math.max(tg.min,lo));
+    var col=j&&j.cls==='w'?'var(--warn)':(ht?'var(--ok)':'var(--ink2)');
+    var band=ht?'<rect x="'+P+'" y="'+Y(Math.min(tg.max,hi)).toFixed(1)+'" width="'+(W-2*P)+'" height="'+Math.max(0,(Y(Math.max(tg.min,lo))-Y(Math.min(tg.max,hi)))).toFixed(1)+'" fill="var(--ok-f)"/>':'';
     var cell=document.createElement('div');cell.className='cell';
-    cell.innerHTML='<div class="ch"><span class="ct2">'+tg.he+'</span><span class="cv" style="color:'+col+'">'+last+'</span></div>'+
+    cell.innerHTML='<div class="ch"><span class="ct2">'+tg.he+(tg.sym?' <small dir="ltr">'+tg.sym+'</small>':'')+'</span><span class="cv" style="color:'+col+'">'+last+'</span></div>'+
       '<div class="cs">'+(j?j.txt:'')+'</div>'+
-      '<div class="spark"><svg viewBox="0 0 '+W+' '+H+'">'+
-      '<rect x="'+P+'" y="'+bandTop.toFixed(1)+'" width="'+(W-2*P)+'" height="'+Math.max(0,(bandBot-bandTop)).toFixed(1)+'" fill="var(--ok-f)"/>'+
+      '<div class="spark"><svg viewBox="0 0 '+W+' '+H+'">'+band+
       '<polyline points="'+line+'" fill="none" stroke="'+col+'" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>'+
       '<circle cx="'+X(pts.length-1).toFixed(1)+'" cy="'+Y(last).toFixed(1)+'" r="2.6" fill="'+col+'"/></svg></div>';
     h.appendChild(cell);
@@ -951,8 +980,8 @@ function renderTests(){
       var j=judge(t,tg.k,v);
       var col=j.cls==='g'?'var(--ok)':j.cls==='w'?'var(--warn)':'var(--ink2)';
       rows+='<span style="display:inline-flex;align-items:center;gap:5px;margin-left:12px;font-size:.8rem">'+
-        '<b style="font-weight:500">'+tg.he+'</b> <span style="font-variant-numeric:tabular-nums">'+v+'</span>'+
-        '<span style="font-size:.68rem;color:'+col+'">'+j.txt+'</span></span>';
+        '<b style="font-weight:500">'+(tg.sym||tg.he)+'</b> <span style="font-variant-numeric:tabular-nums">'+v+'</span>'+
+        '<span style="font-size:.68rem;color:'+col+'">'+(hasTarget(tg)?j.txt:'')+'</span></span>';
     });
     d.innerHTML='<div style="font-size:.78rem;color:var(--ink3);margin-bottom:4px">'+dt+
       (ts.method?' · '+ts.method:'')+'</div>'+rows;
@@ -963,15 +992,16 @@ document.getElementById('t-date').valueAsDate=new Date();
 document.getElementById('t-save').addEventListener('click',function(){
   var t=cur();if(!t)return;
   function g(id){var v=document.getElementById(id).value;return v===''?null:parseFloat(v);}
-  var ts={date:document.getElementById('t-date').value,nh3:g('t-nh3'),no2:g('t-no2'),no3:g('t-no3'),po4:g('t-po4')};
+  var ts={date:document.getElementById('t-date').value};
+  PARAM_KEYS.forEach(function(k){ts[k]=g('t-'+k);});
   if(!ts.date){toast('חסר תאריך');return;}
-  if(ts.nh3==null&&ts.no2==null&&ts.no3==null&&ts.po4==null){toast('לא הוזן ערך');return;}
-  var bad=false;['nh3','no2','no3','po4'].forEach(function(k){var v=ts[k];if(v!=null&&(v<0||v>1000))bad=true;});
+  if(PARAM_KEYS.every(function(k){return ts[k]==null;})){toast('לא הוזן ערך');return;}
+  var bad=false;PARAM_KEYS.forEach(function(k){var v=ts[k];if(v!=null&&(v<0||v>1000))bad=true;});
   if(bad){toast('ערך לא סביר');return;}
   t.tests=t.tests||[];t.tests.unshift(ts);
   t.tests.sort(function(a,b){return b.date<a.date?-1:1;});
   save();renderWater();renderHome();
-  ['t-nh3','t-no2','t-no3','t-po4'].forEach(function(i){document.getElementById(i).value='';});
+  PARAM_KEYS.forEach(function(k){document.getElementById('t-'+k).value='';});
   var stress=targets(t).some(function(tg){var v=ts[tg.k];return v!=null&&v>tg.max;});
   toast(stress?'נשמר — יש ערך באזור סטרס':'נשמר — בטווח ✓');
 });
