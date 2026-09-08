@@ -449,6 +449,8 @@ body{margin:0;background:var(--bg);color:var(--ink);direction:rtl;
     </div>
     <div class="field"><label>אבנים ועץ (ק״ג ≈ ליטר)</label><input id="k-dc" type="number" inputmode="decimal" placeholder="ריק = לא ידוע">
       <div class="hint">לא יודע? השאר ריק — נחשב בזהירות ונציג "עד". כשתשקול, תעדכן.</div></div>
+    <div class="field"><label>עובי זכוכית (מ״מ)</label><input id="k-gl" type="number" inputmode="decimal" placeholder="ריק = לא ידוע">
+      <div class="hint">מודדים אקווריום מבחוץ — הזכוכית עצמה מקטינה את נפח המים. נפוץ: עד ‎100 ל׳ — ‏5; עד ‎250 ל׳ — ‏6–8; גדול — ‏10–12. ריק = חישוב לפי מידות חוץ.</div></div>
     <div class="card" id="k-calc" style="background:var(--sky-f);border-color:rgba(75,174,220,.3)"></div>
   </div>
   <div class="sh-f"><div><button class="cta" id="k-save">שמור אקווריום</button></div></div>
@@ -597,14 +599,18 @@ function targets(t){return (t&&t.targets)||DEF_TARGETS;}
 
 /* ───────── volume (§17): unknown is unknown, never zero ───────── */
 function vol(t){
+  var g=(t.glass==null||isNaN(t.glass))?0:t.glass/10; /* מ״מ→ס״מ; המידות נמדדות מבחוץ */
+  var iL=Math.max(0,t.L-2*g), iW=Math.max(0,t.W-2*g);
   var gross=t.L*t.W*t.H/1000;
   var wl=(t.waterline==null||isNaN(t.waterline))?t.H:t.waterline;
   var sb=(t.substrate==null||isNaN(t.substrate))?0:t.substrate;
   wl=Math.min(wl,t.H);
-  var geo=t.L*t.W*wl/1000, sub=t.L*t.W*sb/1000;
+  var col=Math.max(0,wl-g); /* קו המים נמדד מהתחתית החיצונית — פחות קרקעית הזכוכית */
+  var geo=iL*iW*col/1000, sub=iL*iW*sb/1000;
   var before=Math.max(0,geo-sub);
   var net=(t.decorL==null)?null:Math.max(0,before-t.decorL);
-  return {gross:gross,geo:geo,sub:sub,before:before,net:net};
+  var glassCut=g>0?Math.max(0,gross-(iL*iW*Math.max(0,t.H-g)/1000)):0;
+  return {gross:gross,geo:geo,sub:sub,before:before,net:net,hasGlass:g>0,glassCut:glassCut};
 }
 function fmt(n){return (Math.round(n*10)/10).toLocaleString('he-IL');}
 function netLabel(t){var v=vol(t);return v.net==null?('עד '+fmt(v.before)+' ל׳'):(fmt(v.net)+' ל׳');}
@@ -744,9 +750,9 @@ document.getElementById('cam-file').addEventListener('change',function(e){
 var editingNew=false;
 function openTank(isNew){
   editingNew=!!isNew||!cur();
-  var t=editingNew?{name:'',L:'',W:'',H:'',waterline:'',substrate:'',decorL:''}:cur();
+  var t=editingNew?{name:'',L:'',W:'',H:'',waterline:'',substrate:'',decorL:'',glass:''}:cur();
   document.getElementById('tk-title').textContent=editingNew?'אקווריום חדש':'עריכת '+t.name;
-  [['k-name','name'],['k-l','L'],['k-w','W'],['k-h','H'],['k-wl','waterline'],['k-sb','substrate'],['k-dc','decorL']]
+  [['k-name','name'],['k-l','L'],['k-w','W'],['k-h','H'],['k-wl','waterline'],['k-sb','substrate'],['k-dc','decorL'],['k-gl','glass']]
     .forEach(function(p){var el=document.getElementById(p[0]);el.value=(t[p[1]]==null?'':t[p[1]]);});
   kCalc();
 }
@@ -755,23 +761,24 @@ function kCalc(){
   var L=kv('k-l'),W=kv('k-w'),H=kv('k-h');
   var e=document.getElementById('k-calc');
   if(!L||!W||!H){e.innerHTML='<p style="margin:0;font-size:.8rem;color:var(--ink2)">הזן מידות — והנפח יחושב כאן, חי.</p>';return;}
-  var t={L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc')};
+  var t={L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc'),glass:kv('k-gl')};
   var v=vol(t);
   e.innerHTML='<div style="font-size:.74rem;color:var(--ink2)">נטו לחישובים</div>'+
     '<div style="font-size:1.5rem;font-weight:500;font-variant-numeric:tabular-nums;margin-top:2px">'+(v.net==null?'עד ':'')+fmt(v.net==null?v.before:v.net)+' ליטר</div>'+
     '<div style="font-size:.73rem;color:var(--ink2);margin-top:5px">גולמי '+fmt(v.gross)+' · מים '+fmt(v.geo)+' · מצע −'+fmt(v.sub)+
+    (v.hasGlass?' · זכוכית −'+fmt(v.glassCut):' · <b>זכוכית לא הוזנה — לפי מידות חוץ</b>')+
     (t.decorL==null?' · <b>אבנים ועץ לא ידוע — מוצג ״עד״</b>':' · אבנים −'+fmt(t.decorL))+'</div>';
 }
-['k-l','k-w','k-h','k-wl','k-sb','k-dc'].forEach(function(i){document.getElementById(i).addEventListener('input',kCalc);});
+['k-l','k-w','k-h','k-wl','k-sb','k-dc','k-gl'].forEach(function(i){document.getElementById(i).addEventListener('input',kCalc);});
 document.getElementById('k-save').addEventListener('click',function(){
   var name=document.getElementById('k-name').value.trim();
   var L=kv('k-l'),W=kv('k-w'),H=kv('k-h');
   if(!name){toast('חסר שם');return;}
   if(!L||!W||!H||L<5||W<5||H<5||L>1000){toast('בדוק מידות');return;}
-  var data={name:name,L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc')};
+  var data={name:name,L:L,W:W,H:H,waterline:kv('k-wl'),substrate:kv('k-sb'),decorL:kv('k-dc'),glass:kv('k-gl')};
   if(editingNew){
     var id=Date.now();
-    DB.tanks.push({id:id,name:name,L:L,W:W,H:H,waterline:data.waterline,substrate:data.substrate,decorL:data.decorL,
+    DB.tanks.push({id:id,name:name,L:L,W:W,H:H,waterline:data.waterline,substrate:data.substrate,decorL:data.decorL,glass:data.glass,
       fish:[],wc:[],tests:[],losses:[],targets:null});
     DB.cur=DB.tanks.length-1;
   }else{Object.assign(cur(),data);}
